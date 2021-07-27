@@ -4,10 +4,12 @@ const CaseSchema = new mongoose.Schema({
   docket: {
     type: String,
     required: true,
+    index: true,
   },
   date: {
     type: Date,
     required: true,
+    index: true,
   },
   county: {
     type: String,

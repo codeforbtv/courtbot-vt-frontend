@@ -4,6 +4,7 @@ const ReminderSchema = new mongoose.Schema({
   docket: {
     type: String,
     required: true,
+    index: true,
   },
   phone: {
     type: String,
