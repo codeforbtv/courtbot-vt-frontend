@@ -6,8 +6,8 @@ function App({ Component, pageProps }) {
         <>
             {/* Add the favicon */}
             <Head>
-                <link rel="icon" href="/imgs/c4btv-32x32.png" sizes="32x32" />
-                <link rel="icon" href="/imgs/c4btv-192x192.png" sizes="192x192" />
+                <link rel="icon" href="/imgs/courtbot-btv-32x32.png" sizes="32x32" />
+                <link rel="icon" href="/imgs/courtbot-btv-192x192.png" sizes="192x192" />
             </Head>
 
             <Component {...pageProps} />

@@ -24,6 +24,7 @@ TWILIO_AUTH_TOKEN=Your-Twilio-Auth-Token
 TWILIO_PHONE_NUMBER=Your-Twilio-Number
 NEXT_PUBLIC_PHONE_NUMBER=Twilio-Number-Used-For-Display
 MONGODB_URI=Your-MongoDB-URI
+LOG_LEVEL=Log-Level
 ```
 
 ## util scripts

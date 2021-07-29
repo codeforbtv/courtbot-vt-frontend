@@ -11,19 +11,25 @@ const error = () => {
 
 const help = () => {
   var resp = new MessagingResponse();
-  resp.message(`Reply with a case number to sign up for a reminder. Case numbers look like 3 sets of number. For example: 123-45-67.`);
+  resp.message(`Reply with a docket number to sign up for a reminder. Docket numbers look like 3 sets of numbers or characters. For example: 123-45-67 or 123-CR-45.`);
   return resp;
 };
 
 const caseNotFound = (docket) => {
   var resp = new MessagingResponse();
-  resp.message(`We did not find the case you were looking for`);
+  resp.message(`We did not find any cases with that docket you were looking for`);
   return resp;
 };
 
-const caseFound = (c) => {
+const caseFound = (cases) => {
   var resp = new MessagingResponse();
-  resp.message(`We found a case docket (${c.docket}) scheduled on ${moment(c.date).format('LLL')}, at ${c.street} ${c.city}. Would you like a courtesy reminder the day before? (reply YES or NO)`);
+
+  let message = `We found ${cases.length} case${cases.length > 1 ? 's' : ''}.\nReply with a # if you would like a courtesy reminder the day before or reply with NO to start over.\n`;
+  cases.forEach((c,i) => {
+    message += `\n${i+1} - ${moment(c.date).format('l LT')} @ ${c.street} ${c.city}, VT\n`;
+  })
+  resp.message(message);
+
   return resp;
 };
 
