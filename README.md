@@ -51,3 +51,26 @@ set +a
 # set twilio webhook to local server
 twilio phone-numbers:update "$TWILIO_PHONE_NUMBER" --sms-url="http://localhost:3000/api/sms"
 ```
+
+## heroku setup
+
+```
+# install heroku if not already
+# linux
+curl https://cli-assets.heroku.com/install.sh | sh
+
+# log into heroku
+heroku login
+
+# add project to heroku
+heroku git:remote -a vtcourtbot
+
+# add config vars
+# heroku config:set VARIABLE_NAME=value
+```
+
+## heroku deployment
+
+```
+git push heroku main
+```
