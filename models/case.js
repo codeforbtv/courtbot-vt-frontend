@@ -47,8 +47,13 @@ const CaseSchema = new mongoose.Schema({
   division: {
     type: String,
   },
+  subdivision: {
+    type: String,
+  },
 },{
   timestamps: true,
 });
+
+CaseSchema.index({ docket: 1, county: 1, division: 1 }, { unique: true });
 
 export default mongoose.models.Case || mongoose.model('Case', CaseSchema);

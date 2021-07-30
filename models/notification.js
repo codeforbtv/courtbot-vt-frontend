@@ -6,9 +6,20 @@ const NotificationSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
+  county: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  division: {
+    type: String,
+    required: true,
+    index: true,
+  },
   phone: {
     type: String,
     required: true,
+    index: true,
   },
   event_date: {
     type: Date,
@@ -20,5 +31,7 @@ const NotificationSchema = new mongoose.Schema({
 },{
   timestamps: true,
 });
+
+NotificationSchema.index({ docket: 1, county: 1, division: 1 });
 
 export default mongoose.models.NotificationSchema || mongoose.model('NotificationSchema', NotificationSchema);
