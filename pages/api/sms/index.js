@@ -37,12 +37,12 @@ const handleText = async (req, res, message, phone) => {
           let cases = await Case.find({ docket: docketRequest }).lean().exec();
 
           // if the docket number is the test case, then lets create a test case
-          if (docketRequest === 'testcase' && !cases) {
+          if (docketRequest === 'testcase' && cases.length == 0) {
             cases = [await testCase.createCase()];
           }
 
           // if case was found then let's proceed to the next state
-          if (cases && cases.length > 0) {
+          if (cases.length > 0) {
             // make sure cases is an array
             if (!Array.isArray(cases)) {
               cases = [cases];
