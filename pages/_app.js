@@ -1,5 +1,6 @@
-import 'tailwindcss/tailwind.css';
 import Head from "next/head";
+import 'tailwindcss/tailwind.css';
+import '../css/styles.css'
 
 function App({ Component, pageProps }) {
     return (
@@ -8,6 +9,7 @@ function App({ Component, pageProps }) {
             <Head>
                 <link rel="icon" href="/imgs/courtbot-btv-32x32.png" sizes="32x32" />
                 <link rel="icon" href="/imgs/courtbot-btv-192x192.png" sizes="192x192" />
+
             </Head>
 
             <Component {...pageProps} />
