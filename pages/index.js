@@ -56,12 +56,14 @@ export default function Home() {
             Reply to the message with "stop" and we will stop sending you notifications.
           </dd>
 
+{/*
           <dt>
             How do I turn off notifications for an individual case or ticket?
           </dt>
           <dd>
-            Text in the case or ticket number you are currently following to 1-907-312-2700 and the service will reply with the option to reply "DELETE" to stop notifications for that case or ticket.
+            Text in the case or ticket number you are currently following to { process.env.NEXT_PUBLIC_PHONE_NUMBER } and the service will reply with the option to reply "DELETE" to stop notifications for that case or ticket.
           </dd>
+*/}
 
           <dt>
             Do I still need to verify my court date?
