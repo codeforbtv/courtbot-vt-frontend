@@ -37,7 +37,7 @@ export default function Home() {
               <h2 className="text-lg mb-2">
                 Curious how it works? Try it out in demo mode:
               </h2>
-              <p className="font-light font-mono text-sm text-gray-700 hover:text-gray-900 transition-all duration-200">
+              <p className="font-light font-mono text-sm text-gray-700">
                 Text: testcase<br />
                 To: { process.env.NEXT_PUBLIC_PHONE_NUMBER }
               </p>
