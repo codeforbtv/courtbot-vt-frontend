@@ -67,7 +67,7 @@ export default function Home() {
             Do I still need to verify my court date?
           </dt>
           <dd className="mb-4">
-            Yes! Court dates change frequently, so you should always verify the date and time of your hearing by visiting the <a href="https://www.vermontjudiciary.org/court-hearings">Vermont Judiciary</a>.
+            Yes! Court dates change frequently, so you should always verify the date and time of your hearing by visiting the <a className="underline text-blue-500" href="https://www.vermontjudiciary.org/court-hearings">Vermont Judiciary</a>.
           </dd>
 
           <dt className="font-bold">
