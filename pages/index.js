@@ -21,9 +21,9 @@ export default function Home() {
           <p>
             Just text your case or ticket number to:
           </p>
-          <div id="phoneNumber" className="block p-4 text-2xl font-bold">
+          <p id="phoneNumber" className="text-2xl font-bold">
             { process.env.NEXT_PUBLIC_PHONE_NUMBER }
-          </div>
+          </p>
           <p>
             We will attempt to send you a reminder the evening before your court hearing.
           </p>
@@ -49,32 +49,32 @@ export default function Home() {
         </h4>
 
         <dl>
-          <dt className="font-bold">
+          <dt>
             How do I turn off all notifications?
           </dt>
-          <dd className="mb-4">
+          <dd>
             Reply to the message with "stop" and we will stop sending you notifications.
           </dd>
 
-          <dt className="font-bold">
+          <dt>
             How do I turn off notifications for an individual case or ticket?
           </dt>
-          <dd className="mb-4">
+          <dd>
             Text in the case or ticket number you are currently following to 1-907-312-2700 and the service will reply with the option to reply "DELETE" to stop notifications for that case or ticket.
           </dd>
 
-          <dt className="font-bold">
+          <dt>
             Do I still need to verify my court date?
           </dt>
-          <dd className="mb-4">
-            Yes! Court dates change frequently, so you should always verify the date and time of your hearing by visiting the <a className="underline text-blue-500" href="https://www.vermontjudiciary.org/court-hearings">Vermont Judiciary</a>.
+          <dd>
+            Yes! Court dates change frequently, so you should always verify the date and time of your hearing by visiting the <a href="https://www.vermontjudiciary.org/court-hearings">Vermont Judiciary</a>.
           </dd>
 
-          <dt className="font-bold">
+          <dt>
             Who maintains CourtBotVT?
           </dt>
-          <dd className="mb-4">
-            CourtBotVT is maintained by volunteers at Code for BTV, a brigade of Code for America. If you would like to be involved with this or similar projects, please visit: <a className="underline text-blue-500" href="http://codeforbtv.org">Code for BTV</a>.
+          <dd>
+            CourtBotVT is maintained by volunteers at Code for BTV, a brigade of Code for America. If you would like to be involved with this or similar projects, please visit: <a href="http://codeforbtv.org">Code for BTV</a>.
           </dd>
         </dl>
       </div>

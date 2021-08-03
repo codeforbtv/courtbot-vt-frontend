@@ -1,6 +1,5 @@
-import Head from "next/head";
-import 'tailwindcss/tailwind.css';
-import '../css/styles.css'
+import Head from 'next/head';
+import '../css/styles.css';
 
 function App({ Component, pageProps }) {
     return (

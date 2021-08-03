@@ -1,3 +1,24 @@
+@tailwind base; /* Preflight will be injected here */
+
+@tailwind components;
+
+@tailwind utilities;
+
+@layer base {
+  a {
+    @apply underline text-blue-500;
+  }
+  p {
+    @apply mb-4;
+  }
+  dt {
+    @apply font-bold;
+  }
+  dd {
+    @apply mb-4;
+  }
+}
+
 body {
   background: #f9f9f9;
 }
