@@ -1,7 +1,9 @@
 import moment from 'moment';
 import Twilio from 'twilio';
+import _ from 'lodash';
 import dbConnect from '../utils/db-connect.js';
 import Case from '../models/case.js';
+import Notification from '../models/notification';
 import Reminder from '../models/reminder';
 import logger from '../utils/logger';
 import testCase from '../utils/test-case';
@@ -32,11 +34,11 @@ const client = new Twilio();
       }
     }).exec();
 
+    // lets get a list of dockets to query off of since it's easier then a set of docket, county, & division
     const dockets = cases.map(o => o.docket);
-
     logger.info(`Dockets Found: ${dockets}`);
 
-    // find all reminders that match the cases
+    // find all reminders that match the dockets
     const reminders = await Reminder.find({
       active: true,
       docket: {
@@ -44,22 +46,35 @@ const client = new Twilio();
       },
     }).exec();
 
-    // go thru each reminder to send a text and make it in active
+    // go thru each reminder to check to see if it matches a case
+    // then send a text if it does
     for(let i = 0; i < reminders.length; i++) {
       try {
         const reminder = reminders[i];
 
-        // send the sms
-        const options = {
-          to: reminder.phone,
-          from: process.env.TWILIO_PHONE_NUMBER,
-          body: `Just a reminder that you have an appointment coming up.`,
-        };
-        logger.info(JSON.stringify(options));
-        await client.messages.create(options);
+        const c = _.find(cases, (o) => o.docket === reminder.docket && o.county === reminder.county && o.division === reminder.division);
+        if (c) {
+          // send the sms
+          const options = {
+            to: reminder.phone,
+            from: process.env.TWILIO_PHONE_NUMBER,
+            body: `Just a reminder that you have an appointment coming up on ${moment(c.date).format('l LT')} @ ${c.street} ${c.city}, VT. Docket is ${c.docket}`,
+          };
+          logger.info(JSON.stringify(options));
+          await client.messages.create(options);
 
-        // set the reminder active to false
-        await reminder.updateOne({ active: false });
+          // set the reminder active to false
+          await reminder.updateOne({ active: false });
+
+          // add a notification entry
+          await Notification.create({
+            docket: reminder.docket,
+            county: reminder.county,
+            division: reminder.division,
+            phone: reminder.phone,
+            event_date: c.date,
+          });
+        }
       }
       catch(ex) {
         logger.error(ex);

@@ -10,6 +10,8 @@ const createCase = async () => {
     date: moment().startOf('day').add(1, 'days').add(11, 'hours').toDate(),
     street: '65 State Street',
     city: 'Montpelier',
+    county: 'Washington',
+    division: 'civil',
   });
   c.save();
   return c;
@@ -24,6 +26,8 @@ const updateTime = async () => {
     date: moment().startOf('day').add(1, 'days').add(11, 'hours').toDate(),
     street: '65 State Street',
     city: 'Montpelier',
+    county: 'Washington',
+    division: 'civil',
   }, {
     upsert: true,
   }).exec();

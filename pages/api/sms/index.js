@@ -80,13 +80,16 @@ const handleText = async (req, res, message, phone) => {
         // create a reminder if a valid number was given
         else if (response === parseInt(response).toString() && index >= 0 && index < cases.length) {
           const c = cases[index];
-          res.send(smsResponse.reminderYes(c).toString());
 
           // create a new reminder
-          Reminder.create({
+          await Reminder.create({
             docket: c.docket,
+            county: c.county,
+            division: c.division,
             phone,
           });
+
+          res.send(smsResponse.reminderYes(c).toString());
         }
         // send help due to unexpected response
         else {
