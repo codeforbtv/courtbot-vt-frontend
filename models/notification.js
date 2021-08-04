@@ -34,4 +34,4 @@ const NotificationSchema = new mongoose.Schema({
 
 NotificationSchema.index({ docket: 1, county: 1, division: 1 });
 
-export default mongoose.models.NotificationSchema || mongoose.model('NotificationSchema', NotificationSchema);
+export default mongoose.models.Notification || mongoose.model('Notification', NotificationSchema);
