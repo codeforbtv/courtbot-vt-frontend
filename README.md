@@ -72,5 +72,18 @@ heroku git:remote -a vtcourtbot
 ## heroku deployment
 
 ```
+# deploy latest site
 git push heroku main
 ```
+
+## heroku scheduler
+
+```
+# add scheduler for sending reminders
+# install scheduler
+heroku addons:create scheduler:standard
+```
+
+go to (heroku dashboard)[https://dashboard.heroku.com/] and create a job with the following command
+`node -r esm scripts/send-reminders.js`
+Set it to run at 9PM UTC which is 5PM EDT or 4PM EST.
