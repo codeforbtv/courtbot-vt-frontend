@@ -25,6 +25,8 @@ TWILIO_PHONE_NUMBER=Your-Twilio-Number
 NEXT_PUBLIC_PHONE_NUMBER=Twilio-Number-Used-For-Display
 MONGODB_URI=Your-MongoDB-URI
 LOG_LEVEL=Log-Level
+BASIC_AUTH_USERNAME=username-for-basic-auth
+BASIC_AUTH_PASSWORD=password-for-basic-auth
 ```
 
 ## util scripts

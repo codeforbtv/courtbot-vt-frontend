@@ -5,6 +5,7 @@ import Case from '../../../models/case';
 import Reminder from '../../../models/reminder';
 import testCase from '../../../utils/test-case';
 import logger from '../../../utils/logger';
+import checkBasicAuth from '../../../utils/basic-auth';
 
 const maxAge = 60 * 60; // 1 hour
 const docketRegex = /.+-.+-.+/;
@@ -104,22 +105,25 @@ const handleText = async (req, res, message, phone) => {
 }
 
 export default async function handler(req, res) {
-  await dbConnect();
+  if (await checkBasicAuth(req, res)) {
+    await dbConnect();
 
-  const { method } = req
-
-  switch (method) {
-    case 'POST':
-      await handleText(req, res, req.body.Body, req.body.From);
-      break;
-    case 'GET':
-      await handleText(req, res, req.query.text, process.env.TWILIO_PHONE_NUMBER);
-      break;
-    default:
-      res
-        .status(400)
-        .json({ success: false });
-      break;
+    const { method } = req
+  
+    switch (method) {
+      case 'POST':
+        await handleText(req, res, req.body.Body, req.body.From);
+        break;
+      case 'GET':
+        await handleText(req, res, req.query.text, process.env.TWILIO_PHONE_NUMBER);
+        break;
+      default:
+        res
+          .status(400)
+          .json({ success: false });
+        break;
+    }  
   }
+
   res.end();
 };
