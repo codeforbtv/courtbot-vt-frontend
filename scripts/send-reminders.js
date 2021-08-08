@@ -17,10 +17,6 @@ const client = new Twilio();
     await dbConnect();
     logger.debug('connected');
 
-    // make sure the testcase is set to tomorrow @ 11:00AM
-    logger.info('updating testcase date')
-    await testCase.updateTime();
-    
     // get the day after tomorrows start date & time to use as time bound
     const startDate = new Date();
     const endDate = moment().startOf('day').add(2, 'days').toDate();
@@ -80,6 +76,11 @@ const client = new Twilio();
         logger.error(ex);
       }
     }
+
+    // make sure the testcase is updated to the future
+    logger.info('updating testcase date')
+    await testCase.updateTime();
+
   } catch (e) {
     console.log(e);
   }
