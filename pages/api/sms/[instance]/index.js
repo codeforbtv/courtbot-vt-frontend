@@ -1,16 +1,17 @@
 import { serialize } from 'cookie';
-import dbConnect from '../../../utils/db-connect';
-import smsResponse from '../../../utils/sms-response';
-import Case from '../../../models/case';
-import Reminder from '../../../models/reminder';
-import testCase from '../../../utils/test-case';
-import logger from '../../../utils/logger';
-import checkBasicAuth from '../../../utils/basic-auth';
+import smsResponse from '../../../../utils/sms-response';
+import logger from '../../../../utils/logger';
+import checkBasicAuth from '../../../../utils/basic-auth';
+import { getCaseModel } from '../../../../models/icase';
+import dbConnect from '../../../../instances/vt/utils/db-connect';
+import ReminderDao from '../../../../dao/reminder';
 
 const maxAge = 60 * 60; // 1 hour
-const docketRegex = /.+-.+-.+/;
 
 const handleText = async (req, res, message, phone) => {
+  await dbConnect();
+  const { instance } = req.query;
+  const CaseInstance = await getCaseModel(instance);
   try {
     // clear all cookies
     res.setHeader('Set-Cookie', [
@@ -20,7 +21,7 @@ const handleText = async (req, res, message, phone) => {
     // get the state from the cookie if it exists
     const state = req.cookies.state || 'idle';
 
-    logger.info(`${phone} [${state}]: ${message}`);
+    logger.info(`${phone} (${instance})[${state}]: ${message}`);
 
     // set the response to type xml
     res.setHeader('Content-Type', 'text/xml');
@@ -29,17 +30,20 @@ const handleText = async (req, res, message, phone) => {
     switch (state) {
       default:
       case 'idle':
-        // get the docket number from the text
-        const docketRequest = message.trim().toLowerCase();
+        // get the case number from the text
+        const caseNumber = message.trim().toLowerCase();
 
-        // see if the docket number matches the testcase or the regex
-        if (docketRegex.test(docketRequest) || docketRequest === 'testcase') {
-          // find the case from the database
-          let cases = await Case.find({ docket: docketRequest }).lean().exec();
+        // see if the case number matches the testcase or the regex
+        if (CaseInstance.getNumberRegex().test(caseNumber) || caseNumber === 'testcase') {
+          let cases;
 
-          // if the docket number is the test case, then lets create a test case
-          if (docketRequest === 'testcase' && cases.length == 0) {
-            cases = [await testCase.createCase()];
+          // if the case number is the test case then lets get one
+          if (caseNumber === 'testcase') {
+            cases = [await CaseInstance.getTestCase()];
+          }
+          // find the cases by number
+          else {
+            cases = await CaseInstance.findAll(caseNumber);
           }
 
           // if case was found then let's proceed to the next state
@@ -62,7 +66,7 @@ const handleText = async (req, res, message, phone) => {
         }
         // send help response
         else {
-          res.send(smsResponse.help().toString());
+          res.send(smsResponse.help(CaseInstance.getHelpText()).toString());
         }
         break;
       case 'case_found':
@@ -76,17 +80,16 @@ const handleText = async (req, res, message, phone) => {
 
         // no reminder, but let's send information their way
         if (response === 'no') {
-          res.send(smsResponse.reminderNo().toString());
+          res.send(smsResponse.reminderNo(CaseInstance.getWebsite()).toString());
         }
         // create a reminder if a valid number was given
         else if (response === parseInt(response).toString() && index >= 0 && index < cases.length) {
           const c = cases[index];
 
           // create a new reminder
-          await Reminder.create({
-            docket: c.docket,
-            county: c.county,
-            division: c.division,
+          await ReminderDao.create({
+            uid: c.uid,
+            number: c.number,
             phone,
           });
 
@@ -94,7 +97,7 @@ const handleText = async (req, res, message, phone) => {
         }
         // send help due to unexpected response
         else {
-          res.send(smsResponse.help().toString());
+          res.send(smsResponse.help(CaseInstance.getHelpText()).toString());
         }
         break;
     }
@@ -106,8 +109,6 @@ const handleText = async (req, res, message, phone) => {
 
 export default async function handler(req, res) {
   if (await checkBasicAuth(req, res)) {
-    await dbConnect();
-
     const { method } = req
   
     switch (method) {
