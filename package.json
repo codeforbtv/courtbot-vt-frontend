@@ -8,8 +8,8 @@
     "start": "next start -p $PORT",
     "heroku-postbuild": "npm run build",
     "sendreminders": "node -r esm -r dotenv/config scripts/send-reminders.js dotenv_config_path=.env.local",
-    "loadtestdata": "node -r esm -r dotenv/config scripts/load-test-data.js dotenv_config_path=.env.local",
-    "deletetestdata": "node -r esm -r dotenv/config scripts/delete-test-data.js dotenv_config_path=.env.local"
+    "loadtestdata": "node -r esm -r dotenv/config instances/vt/scripts/load-test-data.js dotenv_config_path=.env.local",
+    "deletetestdata": "node -r esm -r dotenv/config instances/vt/scripts/delete-test-data.js dotenv_config_path=.env.local"
   },
   "dependencies": {
     "autoprefixer": "^10.3.1",

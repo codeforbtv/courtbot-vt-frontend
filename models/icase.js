@@ -1,3 +1,7 @@
+/**
+ * Represents a case interface with static methods that need to be implemented
+ * otherwise errors will be thrown
+ */
 export default class ICase {
   /**
    * Url of the website where to find court cases
@@ -18,9 +22,11 @@ export default class ICase {
   /**
    * finds all the cases by a given number
    * @param {String} number A number associated with a case like ticket or docket
+   * @param {Date} startDate A date that represents the lower bound of a case date
+   * @param {Date} endDate A date that represents the upper bound of a case date
    * @return {Array.ICase}
    */
-  static async findAll(number) {
+  static async findAll({ number, startDate, endDate }) {
     throw ('Not Implemented');
   }
 
@@ -41,7 +47,15 @@ export default class ICase {
   }
 
   /**
-   * 
+   * returns the timezone that the cases are in
+   * @returns {String}
+   */
+  static async getTimezone() {
+    throw ('Not Implemented');
+  }
+
+  /**
+   * Create a case
    * @param {String} uid A unique id for a case
    * @param {String} number A number associated with a case like ticket or docket
    * @param {Date} date Date of when the case takes place

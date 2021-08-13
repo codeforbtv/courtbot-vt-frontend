@@ -43,7 +43,9 @@ const handleText = async (req, res, message, phone) => {
           }
           // find the cases by number
           else {
-            cases = await CaseInstance.findAll(caseNumber);
+            cases = await CaseInstance.findAll({
+              number: caseNumber
+            });
           }
 
           // if case was found then let's proceed to the next state
