@@ -74,7 +74,7 @@ const client = new Twilio();
                   body: `Just a reminder that you have an appointment coming up on ${moment(c.date).tz(CaseInstance.getTimezone()).format('l LT')} @ ${c.address}. Case is ${c.number}`,
                 };
                 logger.info(JSON.stringify(options));
-                //await client.messages.create(options);
+                await client.messages.create(options);
 
                 // set the reminder active to false
                 await reminder.updateOne({ active: false });
