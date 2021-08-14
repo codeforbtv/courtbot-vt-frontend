@@ -34,7 +34,7 @@ export default class ICase {
    * generate a testcase for demo purposes where the date is set to sometime the next day
    * @return {ICase}
    */
-  static async getTestCase() {
+  static getTestCase() {
     throw ('Not Implemented');
   }
 
@@ -42,7 +42,7 @@ export default class ICase {
    * get a helper text to send to the user for instructions on how to use courtbot
    * @return {String}
    */
-  static async getHelpText() {
+  static getHelpText() {
     throw ('Not Implemented');
   }
 
@@ -50,7 +50,7 @@ export default class ICase {
    * returns the timezone that the cases are in
    * @returns {String}
    */
-  static async getTimezone() {
+  static getTimezone() {
     throw ('Not Implemented');
   }
 

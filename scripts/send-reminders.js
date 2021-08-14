@@ -1,11 +1,11 @@
 import fs from 'fs';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import path from 'path';
 import Twilio from 'twilio';
 import _ from 'lodash';
 import dbConnect from '../instances/vt/utils/db-connect.js';
-import Notification from '../dao/notification';
-import Reminder from '../dao/reminder';
+import NotificationDao from '../dao/notification';
+import ReminderDao from '../dao/reminder';
 import { getCaseModel } from '../models/icase';
 import logger from '../utils/logger';
 
@@ -35,7 +35,7 @@ const client = new Twilio();
 
           // get the day after tomorrows start date & time to use as time bound
           const startDate = moment().toDate();
-          const endDate = moment().startOf('day').add(2, 'days').toDate();
+          const endDate = moment.tz(CaseInstance.getTimezone()).startOf('day').add(2, 'days').toDate();
           logger.info(`Searching for dates between ${startDate} - ${endDate}`);
 
           // find all cases within the time bounds
@@ -52,12 +52,12 @@ const client = new Twilio();
           logger.info(`Cases Found: ${uids}`);
 
           // find all reminders that match the dockets
-          const reminders = await Reminder.find({
+          const reminders = await ReminderDao.find({
             active: true,
             uid: {
               $in: uids,
             },
-          }).lean().exec();
+          }).exec();
 
           // go thru each reminder to check to see if it matches a case
           // then send a text if it does
@@ -71,19 +71,18 @@ const client = new Twilio();
                 const options = {
                   to: reminder.phone,
                   from: process.env.TWILIO_PHONE_NUMBER,
-                  body: `Just a reminder that you have an appointment coming up on ${moment(c.date).format('l LT')} @ ${c.address}. Case is ${c.number}`,
+                  body: `Just a reminder that you have an appointment coming up on ${moment(c.date).tz(CaseInstance.getTimezone()).format('l LT')} @ ${c.address}. Case is ${c.number}`,
                 };
                 logger.info(JSON.stringify(options));
-                await client.messages.create(options);
+                //await client.messages.create(options);
 
                 // set the reminder active to false
                 await reminder.updateOne({ active: false });
 
                 // add a notification entry
-                await Notification.create({
-                  docket: reminder.docket,
-                  county: reminder.county,
-                  division: reminder.division,
+                await NotificationDao.create({
+                  uid: reminder.uid,
+                  number: reminder.number,
                   phone: reminder.phone,
                   event_date: c.date,
                 });

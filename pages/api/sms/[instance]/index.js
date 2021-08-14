@@ -39,7 +39,7 @@ const handleText = async (req, res, message, phone) => {
 
           // if the case number is the test case then lets get one
           if (caseNumber === 'testcase') {
-            cases = [await CaseInstance.getTestCase()];
+            cases = [CaseInstance.getTestCase()];
           }
           // find the cases by number
           else {
@@ -59,7 +59,7 @@ const handleText = async (req, res, message, phone) => {
               serialize('state', String('case_found'), { maxAge }),
               serialize('cases', String(JSON.stringify(cases)), { maxAge }),
             ]);
-            res.send(smsResponse.caseFound(cases).toString());
+            res.send(smsResponse.caseFound(cases, CaseInstance.getTimezone()).toString());
           }
           // case not found
           else {
