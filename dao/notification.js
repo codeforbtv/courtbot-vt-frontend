@@ -1,17 +1,12 @@
 import mongoose from 'mongoose';
 
 const NotificationSchema = new mongoose.Schema({
-  docket: {
+  uid: {
     type: String,
     required: true,
     index: true,
   },
-  county: {
-    type: String,
-    required: true,
-    index: true,
-  },
-  division: {
+  number: {
     type: String,
     required: true,
     index: true,
@@ -31,7 +26,5 @@ const NotificationSchema = new mongoose.Schema({
 },{
   timestamps: true,
 });
-
-NotificationSchema.index({ docket: 1, county: 1, division: 1 });
 
 export default mongoose.models.Notification || mongoose.model('Notification', NotificationSchema);

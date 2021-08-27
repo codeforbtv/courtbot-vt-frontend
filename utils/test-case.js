@@ -1,5 +1,6 @@
 import moment from 'moment';
-import Case from '../models/case.js';
+
+import Case from '../instances/vt/dao/case';
 
 const TEST_CASE_DOCKET = 'testcase';
 

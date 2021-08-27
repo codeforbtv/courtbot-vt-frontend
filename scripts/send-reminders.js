@@ -1,12 +1,13 @@
-import moment from 'moment';
+import fs from 'fs';
+import moment from 'moment-timezone';
+import path from 'path';
 import Twilio from 'twilio';
 import _ from 'lodash';
-import dbConnect from '../utils/db-connect.js';
-import Case from '../models/case.js';
-import Notification from '../models/notification';
-import Reminder from '../models/reminder';
+import dbConnect from '../instances/vt/utils/db-connect.js';
+import NotificationDao from '../dao/notification';
+import ReminderDao from '../dao/reminder';
+import { getCaseModel } from '../models/icase';
 import logger from '../utils/logger';
-import testCase from '../utils/test-case';
 
 const client = new Twilio();
 
@@ -17,70 +18,86 @@ const client = new Twilio();
     await dbConnect();
     logger.debug('connected');
 
-    // get the day after tomorrows start date & time to use as time bound
-    const startDate = new Date();
-    const endDate = moment().startOf('day').add(2, 'days').toDate();
-    logger.info(`Searching for dates between ${startDate} - ${endDate}`);
+    // get a list of instances
+    const instanceDirectory = path.join(process.cwd(), './instances/');
+    const items = fs.readdirSync(instanceDirectory);
 
-    // find all cases within the time bounds
-    const cases = await Case.find({
-      date: {
-        $gt: startDate,
-        $lt: endDate,
-      }
-    }).exec();
-
-    // lets get a list of dockets to query off of since it's easier then a set of docket, county, & division
-    const dockets = cases.map(o => o.docket);
-    logger.info(`Dockets Found: ${dockets}`);
-
-    // find all reminders that match the dockets
-    const reminders = await Reminder.find({
-      active: true,
-      docket: {
-        $in: dockets,
-      },
-    }).exec();
-
-    // go thru each reminder to check to see if it matches a case
-    // then send a text if it does
-    for(let i = 0; i < reminders.length; i++) {
+    // go thru each item found in the directory
+    for(let instanceIndex = 0; instanceIndex < items.length; instanceIndex++) {
       try {
-        const reminder = reminders[i];
+        const instance = items[instanceIndex];
+        // if the item is a directory then lets assume it's a valid instance
+        if (fs.lstatSync(path.join(instanceDirectory, instance)).isDirectory()) {
+          logger.info(`Instance = ${instance}`);
 
-        const c = _.find(cases, (o) => o.docket === reminder.docket && o.county === reminder.county && o.division === reminder.division);
-        if (c) {
-          // send the sms
-          const options = {
-            to: reminder.phone,
-            from: process.env.TWILIO_PHONE_NUMBER,
-            body: `Just a reminder that you have an appointment coming up on ${moment(c.date).format('l LT')} @ ${c.street} ${c.city}, VT. Docket is ${c.docket}`,
-          };
-          logger.info(JSON.stringify(options));
-          await client.messages.create(options);
+          // get the case instance
+          const CaseInstance = await getCaseModel(instance);
 
-          // set the reminder active to false
-          await reminder.updateOne({ active: false });
+          // get the day after tomorrows start date & time to use as time bound
+          const startDate = moment().toDate();
+          const endDate = moment.tz(CaseInstance.getTimezone()).startOf('day').add(2, 'days').toDate();
+          logger.info(`Searching for dates between ${startDate} - ${endDate}`);
 
-          // add a notification entry
-          await Notification.create({
-            docket: reminder.docket,
-            county: reminder.county,
-            division: reminder.division,
-            phone: reminder.phone,
-            event_date: c.date,
+          // find all cases within the time bounds
+          const cases = await CaseInstance.findAll({
+            startDate,
+            endDate,
           });
+
+          // add the test case for any reminders
+          cases.push(await CaseInstance.getTestCase());
+
+          // lets get a list of uids to query off
+          const uids = cases.map(o => o.uid);
+          logger.info(`Cases Found: ${uids}`);
+
+          // find all reminders that match the dockets
+          const reminders = await ReminderDao.find({
+            active: true,
+            uid: {
+              $in: uids,
+            },
+          }).exec();
+
+          // go thru each reminder to check to see if it matches a case
+          // then send a text if it does
+          for(let i = 0; i < reminders.length; i++) {
+            try {
+              const reminder = reminders[i];
+
+              const c = _.find(cases, (o) => o.uid === reminder.uid);
+              if (c) {
+                // send the sms
+                const options = {
+                  to: reminder.phone,
+                  from: process.env.TWILIO_PHONE_NUMBER,
+                  body: `Just a reminder that you have an appointment coming up on ${moment(c.date).tz(CaseInstance.getTimezone()).format('l LT')} @ ${c.address}. Case is ${c.number}`,
+                };
+                logger.info(JSON.stringify(options));
+                await client.messages.create(options);
+
+                // set the reminder active to false
+                await reminder.updateOne({ active: false });
+
+                // add a notification entry
+                await NotificationDao.create({
+                  uid: reminder.uid,
+                  number: reminder.number,
+                  phone: reminder.phone,
+                  event_date: c.date,
+                });
+              }
+            }
+            catch(ex) {
+              logger.error(ex);
+            }
+          }
         }
       }
-      catch(ex) {
+      catch (ex) {
         logger.error(ex);
       }
     }
-
-    // make sure the testcase is updated to the future
-    logger.info('updating testcase date')
-    await testCase.updateTime();
-
   } catch (e) {
     console.log(e);
   }
