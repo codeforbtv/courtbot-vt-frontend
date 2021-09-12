@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 
-const CaseSchema = new mongoose.Schema({
+let conn;
+let EventDao;
+
+const EventSchema = new mongoose.Schema({
   docket: {
     type: String,
     required: true,
@@ -54,6 +57,20 @@ const CaseSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-CaseSchema.index({ docket: 1, county: 1, division: 1 }, { unique: true });
+EventSchema.index({ docket: 1, county: 1, division: 1 }, { unique: true });
 
-export default mongoose.models.Case || mongoose.model('Case', CaseSchema);
+async function initialize() {
+  if (conn == null) {
+    conn = await mongoose.createConnection(process.env.VT_MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+    });
+    EventDao = conn.model('Event', EventSchema);
+  }
+}
+
+export {
+  initialize,
+  EventDao,
+};

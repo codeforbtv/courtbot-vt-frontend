@@ -3,13 +3,12 @@ import smsResponse from '../../../../utils/sms-response';
 import logger from '../../../../utils/logger';
 import checkBasicAuth from '../../../../utils/basic-auth';
 import { getCaseModel } from '../../../../models/icase';
-import dbConnect from '../../../../instances/vt/utils/db-connect';
-import ReminderDao from '../../../../dao/reminder';
+import { initialize, ReminderDao } from '../../../../dao/mongoose';
 
 const maxAge = 60 * 60; // 1 hour
 
 const handleText = async (req, res, message, phone) => {
-  await dbConnect();
+  await initialize();
   const { instance } = req.query;
   const CaseInstance = await getCaseModel(instance);
   try {

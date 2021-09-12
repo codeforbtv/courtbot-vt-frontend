@@ -1,8 +1,7 @@
 import moment from 'moment-timezone';
 
 import ICase from '../../../models/icase';
-import CaseDao from '../dao/case';
-import dbConnect from '../utils/db-connect';
+import { initialize, EventDao } from '../dao/mongoose';
 
 function toCase(o) {
   return new Case(
@@ -23,7 +22,7 @@ export default class Case extends ICase {
   }
 
   static async findAll({ number, startDate, endDate }) {
-    await dbConnect();
+    await initialize();
 
     let params = {};
 
@@ -39,7 +38,7 @@ export default class Case extends ICase {
     if (endDate) {
       params.date.$lt = endDate;
     }
-    const cases = await CaseDao.find(params).lean().exec();
+    const cases = await EventDao.find(params).lean().exec();
 
     return cases.map(toCase);
   }

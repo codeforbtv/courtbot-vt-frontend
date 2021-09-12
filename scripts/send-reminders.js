@@ -3,9 +3,7 @@ import moment from 'moment-timezone';
 import path from 'path';
 import Twilio from 'twilio';
 import _ from 'lodash';
-import dbConnect from '../instances/vt/utils/db-connect.js';
-import NotificationDao from '../dao/notification';
-import ReminderDao from '../dao/reminder';
+import { initialize, NotificationDao, ReminderDao } from '../dao/mongoose';
 import { getCaseModel } from '../models/icase';
 import logger from '../utils/logger';
 
@@ -15,7 +13,7 @@ const client = new Twilio();
   try {
     // connect to database
     logger.debug('connecting to database');
-    await dbConnect();
+    await initialize();
     logger.debug('connected');
 
     // get a list of instances

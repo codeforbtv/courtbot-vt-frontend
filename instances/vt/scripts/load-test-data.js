@@ -1,6 +1,5 @@
 import moment from 'moment';
-import dbConnect from '../utils/db-connect.js';
-import CaseDao from '../dao/case.js';
+import { initialize, EventDao } from '../dao/mongoose.js';
 
 const county = ['addison', 'bennington', 'caledonia', 'chittenden', 'environmental', 'essex', 'franklin', 'grand isle', 'judicial bureau', 'lamoille', 'orange', 'orleans', 'rutland', 'supreme court', 'washington', 'windham', 'windsor'];
 const city = ['middlebury', 'bennington', 'st johnsbury', 'burlington', 'burlington', 'guildhall', 'st albans', 'north hero', 'burlington', 'hyde park', 'chelsea', 'newport', 'rutland', 'south royalton', 'barre', 'brattleboro', 'white river junction'];
@@ -8,14 +7,14 @@ const subdivision = ['civil', 'criminal', 'family', 'probate', 'environmental', 
 (async () => {
   try {
     // connect to database
-    await dbConnect();
+    await initialize();
 
     const date = moment();
     // create test cases
     for (let i = 0; i < 10; i++) {
       const docket = `test-case-${i % 6}`;
       console.log(`creating case ${docket}`)
-      await CaseDao.create({
+      await EventDao.create({
         docket,
         // add 6 hours to the date to spread test data across multiple hours / days
         date: date.add(6, 'hours').toDate(),
