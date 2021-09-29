@@ -1,10 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose, { Connection, Model } from 'mongoose';
+import { Notification, Reminder } from '../types';
 
-let conn;
-let NotificationDao;
-let ReminderDao;
+let conn:Connection;
+let NotificationDao:Model<Notification>;
+let ReminderDao:Model<Reminder>;
 
-const NotificationSchema = new mongoose.Schema({
+const NotificationSchema = new mongoose.Schema<Notification>({
   uid: {
     type: String,
     required: true,
@@ -31,7 +32,7 @@ const NotificationSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-const ReminderSchema = new mongoose.Schema({
+const ReminderSchema = new mongoose.Schema<Reminder>({
   uid: {
     type: String,
     required: true,
@@ -58,13 +59,13 @@ const ReminderSchema = new mongoose.Schema({
 
 async function initialize() {
   if (conn == null) {
-    conn = await mongoose.createConnection(process.env.MONGODB_URI, {
+    conn = await mongoose.createConnection(process.env.MONGODB_URI || '', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
     });
-    NotificationDao = conn.model('Notification', NotificationSchema);
-    ReminderDao = conn.model('Reminder', ReminderSchema);
+    NotificationDao = conn.model<Notification>('Notification', NotificationSchema);
+    ReminderDao = conn.model<Reminder>('Reminder', ReminderSchema);
   }
 }
 

@@ -1,7 +1,8 @@
+import { AppProps } from 'next/app'
 import Head from 'next/head';
 import '../css/styles.css';
 
-function App({ Component, pageProps }) {
+function App({ Component, pageProps }:AppProps) {
     return (
         <>
             {/* Add the favicon */}
