@@ -1,16 +1,17 @@
+import { NextApiRequest, NextApiResponse } from 'next'
 import { serialize } from 'cookie';
 import smsResponse from '../../../../utils/sms-response';
 import logger from '../../../../utils/logger';
 import checkBasicAuth from '../../../../utils/basic-auth';
-import { getCaseModel } from '../../../../models/icase';
+import { getInstanceMethods } from '../../../../types/i-instance-methods';
 import { initialize, ReminderDao } from '../../../../dao/mongoose';
 
 const maxAge = 60 * 60; // 1 hour
 
-const handleText = async (req, res, message, phone) => {
+const handleText = async (req:NextApiRequest, res:NextApiResponse, message:string, phone:string) => {
   await initialize();
   const { instance } = req.query;
-  const CaseInstance = await getCaseModel(instance);
+  const instanceMethods = await getInstanceMethods(Array.isArray(instance) ? instance[0]: instance);
   try {
     // clear all cookies
     res.setHeader('Set-Cookie', [
@@ -33,17 +34,18 @@ const handleText = async (req, res, message, phone) => {
         const caseNumber = message.trim().toLowerCase();
 
         // see if the case number matches the testcase or the regex
-        if (CaseInstance.getNumberRegex().test(caseNumber) || caseNumber === 'testcase') {
+        if (instanceMethods.getNumberRegex().test(caseNumber) || caseNumber === 'testcase') {
           let cases;
 
           // if the case number is the test case then lets get one
           if (caseNumber === 'testcase') {
-            cases = [CaseInstance.getTestCase()];
+            cases = [instanceMethods.getTestCase()];
           }
-          // find the cases by number
+          // find future cases by number
           else {
-            cases = await CaseInstance.findAll({
-              number: caseNumber
+            cases = await instanceMethods.findAll({
+              number: caseNumber,
+              startDate: new Date(),
             });
           }
 
@@ -58,16 +60,16 @@ const handleText = async (req, res, message, phone) => {
               serialize('state', String('case_found'), { maxAge }),
               serialize('cases', String(JSON.stringify(cases)), { maxAge }),
             ]);
-            res.send(smsResponse.caseFound(cases, CaseInstance.getTimezone()).toString());
+            res.send(smsResponse.caseFound(cases, instanceMethods.getTimezone()).toString());
           }
           // case not found
           else {
-            res.send(smsResponse.caseNotFound().toString());
+            res.send(smsResponse.caseNotFound(caseNumber).toString());
           }
         }
         // send help response
         else {
-          res.send(smsResponse.help(CaseInstance.getHelpText()).toString());
+          res.send(smsResponse.help(instanceMethods.getHelpText()).toString());
         }
         break;
       case 'case_found':
@@ -81,7 +83,7 @@ const handleText = async (req, res, message, phone) => {
 
         // no reminder, but let's send information their way
         if (response === 'no') {
-          res.send(smsResponse.reminderNo(CaseInstance.getWebsite()).toString());
+          res.send(smsResponse.reminderNo(instanceMethods.getWebsite()).toString());
         }
         // create a reminder if a valid number was given
         else if (response === parseInt(response).toString() && index >= 0 && index < cases.length) {
@@ -98,7 +100,7 @@ const handleText = async (req, res, message, phone) => {
         }
         // send help due to unexpected response
         else {
-          res.send(smsResponse.help(CaseInstance.getHelpText()).toString());
+          res.send(smsResponse.help(instanceMethods.getHelpText()).toString());
         }
         break;
     }
@@ -108,7 +110,7 @@ const handleText = async (req, res, message, phone) => {
   }
 }
 
-export default async function handler(req, res) {
+export default async function handler(req:NextApiRequest, res:NextApiResponse) {
   if (await checkBasicAuth(req, res)) {
     const { method } = req
   
@@ -117,7 +119,7 @@ export default async function handler(req, res) {
         await handleText(req, res, req.body.Body, req.body.From);
         break;
       case 'GET':
-        await handleText(req, res, req.query.text, process.env.TWILIO_PHONE_NUMBER);
+        await handleText(req, res, Array.isArray(req.query.text) ? req.query.text[0] : req.query.text, process.env.TWILIO_PHONE_NUMBER || '');
         break;
       default:
         res

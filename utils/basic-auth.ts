@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next'
 import logger from './logger';
 
 const {
@@ -5,7 +6,7 @@ const {
   BASIC_AUTH_PASSWORD,
 } = process.env;
 
-const headerToBase64 = (header) => {
+const headerToBase64 = (header:string) => {
   const b64auth = header.split(" ")[1]
   const [user, password] = Buffer.from(b64auth, "base64")
     .toString()
@@ -14,7 +15,7 @@ const headerToBase64 = (header) => {
   return [user, password]
 }
 
-async function checkBasicAuth(req, res) {
+async function checkBasicAuth(req:NextApiRequest, res:NextApiResponse) {
   let isAuthenticated = false;
   if (!req.headers.authorization) {
     res.setHeader("WWW-Authenticate", 'Basic realm="Protected"');

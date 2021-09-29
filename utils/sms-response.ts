@@ -1,4 +1,5 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
+import { Case } from '../types';
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 
 const error = () => {
@@ -7,19 +8,19 @@ const error = () => {
   return resp;
 };
 
-const help = (helpText) => {
+const help = (helpText:string) => {
   var resp = new MessagingResponse();
   resp.message(helpText);
   return resp;
 };
 
-const caseNotFound = (docket) => {
+const caseNotFound = (number:string) => {
   var resp = new MessagingResponse();
-  resp.message(`We did not find any cases with that docket you were looking for`);
+  resp.message(`We did not find any cases that match ${number}`);
   return resp;
 };
 
-const caseFound = (cases, timezone = 'America/New_York') => {
+const caseFound = (cases:Case[], timezone = 'America/New_York') => {
   var resp = new MessagingResponse();
 
   let message = `We found ${cases.length} case${cases.length > 1 ? 's' : ''}.\nReply with a # if you would like a courtesy reminder the day before or reply with NO to start over.\n`;
@@ -31,13 +32,13 @@ const caseFound = (cases, timezone = 'America/New_York') => {
   return resp;
 };
 
-const reminderYes = (c) => {
+const reminderYes = (c:Case) => {
   var resp = new MessagingResponse();
   resp.message(`Reminder set for case (${c.number})`);
   return resp;
 };
 
-const reminderNo = (website) => {
+const reminderNo = (website:string) => {
   var resp = new MessagingResponse();
   resp.message(`You said no so we won't text you a reminder. You can always go to ${website} for more information about your case.`);
   return resp;

@@ -1,9 +1,29 @@
-import mongoose from 'mongoose';
+import mongoose, { Connection, Model } from 'mongoose';
 
-let conn;
-let EventDao;
+let conn:Connection;
+let EventDao:Model<Event>;
 
-const EventSchema = new mongoose.Schema({
+export interface Event {
+  docket: string;
+  date: Date;
+  county: string;
+  court_room: string;
+  hearing_type: string;
+  day_of_week: string;
+  day: string;
+  month: string;
+  time: string;
+  am_pm: string;
+  street: string;
+  city: string;
+  zip_code: string;
+  division: string;
+  subdivision: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const EventSchema = new mongoose.Schema<Event>({
   docket: {
     type: String,
     required: true,
@@ -61,7 +81,7 @@ EventSchema.index({ docket: 1, county: 1, division: 1 }, { unique: true });
 
 async function initialize() {
   if (conn == null) {
-    conn = await mongoose.createConnection(process.env.VT_MONGODB_URI, {
+    conn = await mongoose.createConnection(process.env.VT_MONGODB_URI || '', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
