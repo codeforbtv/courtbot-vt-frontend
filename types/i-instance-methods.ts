@@ -27,7 +27,8 @@ export interface IInstanceMethods {
   findAll(obj:{ number?:string, startDate?:Date, endDate?:Date }): Promise<Case[]>;
 
   /**
-   * generate a testcase for demo purposes where the date is set to sometime the next day
+   * generate a testcase for demo purposes where the date is set to sometime
+   * in 2 days.
    * @return {ICase}
    */
   getTestCase():Case;
