@@ -65,7 +65,7 @@ curl https://cli-assets.heroku.com/install.sh | sh
 heroku login
 
 # add project to heroku
-heroku git:remote -a vtcourtbot
+heroku git:remote -a courtbotvt
 
 # add config vars
 # heroku config:set VARIABLE_NAME=value
