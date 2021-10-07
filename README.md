@@ -87,5 +87,5 @@ heroku addons:create scheduler:standard
 ```
 
 go to (heroku dashboard)[https://dashboard.heroku.com/] and create a job with the following command
-`npx ts-node --project scripts/tsconfig.json scripts/send-reminders.ts`
+`npx ts-node --project scripts/tsconfig.json -T scripts/send-reminders.ts`
 Set it to run at 10PM UTC which is 6PM EDT or 5PM EST.
