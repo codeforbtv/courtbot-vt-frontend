@@ -1,13 +1,13 @@
 import fs from 'fs';
 import moment from 'moment-timezone';
 import path from 'path';
-import Twilio from 'twilio';
+import { Twilio } from "twilio";
 import _ from 'lodash';
 import { initialize, NotificationDao, ReminderDao } from '../dao/mongoose';
-import { getCaseModel } from '../models/icase';
+import { getInstanceMethods } from '../types/i-instance-methods';
 import logger from '../utils/logger';
 
-const client = new Twilio();
+const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWILIO_AUTH_TOKEN || '');
 
 (async () => {
   try {
@@ -29,21 +29,21 @@ const client = new Twilio();
           logger.info(`Instance = ${instance}`);
 
           // get the case instance
-          const CaseInstance = await getCaseModel(instance);
+          const instanceMethods = await getInstanceMethods(instance);
 
           // get the day after tomorrows start date & time to use as time bound
           const startDate = moment().toDate();
-          const endDate = moment.tz(CaseInstance.getTimezone()).startOf('day').add(2, 'days').toDate();
+          const endDate = moment.tz(instanceMethods.getTimezone()).startOf('day').add(2, 'days').toDate();
           logger.info(`Searching for dates between ${startDate} - ${endDate}`);
 
           // find all cases within the time bounds
-          const cases = await CaseInstance.findAll({
+          const cases = await instanceMethods.findAll({
             startDate,
             endDate,
           });
 
           // add the test case for any reminders
-          cases.push(await CaseInstance.getTestCase());
+          cases.push(await instanceMethods.getTestCase(1));
 
           // lets get a list of uids to query off
           const uids = cases.map(o => o.uid);
@@ -69,21 +69,21 @@ const client = new Twilio();
                 const options = {
                   to: reminder.phone,
                   from: process.env.TWILIO_PHONE_NUMBER,
-                  body: `Just a reminder that you have an appointment coming up on ${moment(c.date).tz(CaseInstance.getTimezone()).format('l LT')} @ ${c.address}. Case is ${c.number}`,
+                  body: `Just a reminder that you have an appointment coming up on ${moment(c.date).tz(instanceMethods.getTimezone()).format('l LT')} @ ${c.address}. Case is ${c.number}`,
                 };
                 logger.info(JSON.stringify(options));
-                await client.messages.create(options);
+                // await client.messages.create(options);
 
                 // set the reminder active to false
-                await reminder.updateOne({ active: false });
+                // await reminder.updateOne({ active: false });
 
                 // add a notification entry
-                await NotificationDao.create({
-                  uid: reminder.uid,
-                  number: reminder.number,
-                  phone: reminder.phone,
-                  event_date: c.date,
-                });
+                // await NotificationDao.create({
+                //   uid: reminder.uid,
+                //   number: reminder.number,
+                //   phone: reminder.phone,
+                //   event_date: c.date,
+                // });
               }
             }
             catch(ex) {

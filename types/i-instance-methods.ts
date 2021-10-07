@@ -27,11 +27,11 @@ export interface IInstanceMethods {
   findAll(obj:{ number?:string, startDate?:Date, endDate?:Date }): Promise<Case[]>;
 
   /**
-   * generate a testcase for demo purposes where the date is set to sometime
-   * in 2 days.
-   * @return {ICase}
+   * generate a testcase for demo purposes where the date is set to sometime in X days
+   * @param {Number} days Number of days in the future for the court date
+   * @return {Case}
    */
-  getTestCase():Case;
+  getTestCase(days:number):Case;
 
   /**
    * get a helper text to send to the user for instructions on how to use courtbot

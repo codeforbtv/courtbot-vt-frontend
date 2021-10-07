@@ -39,7 +39,7 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
 
           // if the case number is the test case then lets get one
           if (caseNumber === 'testcase') {
-            cases = [instanceMethods.getTestCase()];
+            cases = [instanceMethods.getTestCase(2)];
           }
           // find future cases by number
           else {

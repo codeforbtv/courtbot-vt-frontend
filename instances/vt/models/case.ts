@@ -54,11 +54,11 @@ export default class VtInstanceMethods implements IInstanceMethods {
     return cases.map(toCase);
   }
 
-  getTestCase() {
+  getTestCase(days:number) {
     return {
       uid: `testcase`,
       number: `testcase`,
-      date: moment.tz(TIMEZONE).startOf('day').add(2, 'days').add(11, 'hours').toDate(),
+      date: moment.tz(TIMEZONE).startOf('day').add(days, 'days').add(11, 'hours').toDate(),
       address: `65 State Street Montpelier, VT`,
     };
   }
