@@ -72,18 +72,18 @@ const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWIL
                   body: `Just a reminder that you have an appointment coming up on ${moment(c.date).tz(instanceMethods.getTimezone()).format('l LT')} @ ${c.address}. Case is ${c.number}`,
                 };
                 logger.info(JSON.stringify(options));
-                // await client.messages.create(options);
+                await client.messages.create(options);
 
                 // set the reminder active to false
-                // await reminder.updateOne({ active: false });
+                await reminder.updateOne({ active: false });
 
                 // add a notification entry
-                // await NotificationDao.create({
-                //   uid: reminder.uid,
-                //   number: reminder.number,
-                //   phone: reminder.phone,
-                //   event_date: c.date,
-                // });
+                await NotificationDao.create({
+                  uid: reminder.uid,
+                  number: reminder.number,
+                  phone: reminder.phone,
+                  event_date: c.date,
+                });
               }
             }
             catch(ex) {
