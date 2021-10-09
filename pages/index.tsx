@@ -19,7 +19,7 @@ export default function Home() {
         </h3>
         <div id="howItWorks" className="mb-8">
           <p>
-            Just text your case or ticket number to:
+            Just text your docket number to:
           </p>
           <p id="phoneNumber" className="text-2xl font-bold">
             { process.env.NEXT_PUBLIC_PHONE_NUMBER }
@@ -28,8 +28,7 @@ export default function Home() {
             We will attempt to send you a reminder the evening before your court hearing.
           </p>
           <p>
-            Case numbers are 14 characters long like: 123-45-678 or 123-CR-45.
-            Ticket numbers can be 5 to 9 characters long.
+            Docket numbers look like 3 sets of numbers or characters like: 123-45-678 or 123-CR-45.
           </p>
 
           <div id="testcase" className="card m-2 border border-gray-400 rounded-lg">
@@ -49,34 +48,26 @@ export default function Home() {
         </h4>
 
         <dl>
+{/*}
           <dt>
             How do I turn off all notifications?
           </dt>
           <dd>
             Reply to the message with "stop" and we will stop sending you notifications.
           </dd>
-
-{/*
-          <dt>
-            How do I turn off notifications for an individual case or ticket?
-          </dt>
-          <dd>
-            Text in the case or ticket number you are currently following to { process.env.NEXT_PUBLIC_PHONE_NUMBER } and the service will reply with the option to reply "DELETE" to stop notifications for that case or ticket.
-          </dd>
-*/}
-
+{*/}
           <dt>
             Do I still need to verify my court date?
           </dt>
           <dd>
-            Yes! Court dates change frequently, so you should always verify the date and time of your hearing by visiting the <a href="https://www.vermontjudiciary.org/court-hearings">Vermont Judiciary</a>.
+            Yes! Court dates change frequently, so you should always verify the date and time of your hearing by visiting the <a href="https://www.vermontjudiciary.org/court-hearings">Vermont Judiciary</a>
           </dd>
 
           <dt>
             Who maintains CourtBotVT?
           </dt>
           <dd>
-            CourtBotVT is maintained by volunteers at Code for BTV, a brigade of Code for America. If you would like to be involved with this or similar projects, please visit: <a href="http://codeforbtv.org">Code for BTV</a>.
+            CourtBotVT is maintained by volunteers at Code for BTV, a brigade of Code for America. If you would like to be involved with this or similar projects, please visit: <a href="https://codeforbtv.org">Code for BTV</a>
           </dd>
         </dl>
       </div>
