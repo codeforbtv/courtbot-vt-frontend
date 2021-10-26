@@ -5,7 +5,7 @@ let EventDao:Model<Event>;
 
 export interface Event {
   docket: string;
-  date: Date;
+  date: Array<Date>;
   county: string;
   court_room: string;
   hearing_type: string;
@@ -30,7 +30,7 @@ const EventSchema = new mongoose.Schema<Event>({
     index: true,
   },
   date: {
-    type: Date,
+    type: [Date],
     required: true,
     index: true,
   },

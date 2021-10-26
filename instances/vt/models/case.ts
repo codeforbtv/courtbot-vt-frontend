@@ -5,13 +5,41 @@ import { initialize, Event, EventDao } from '../dao/mongoose';
 
 const TIMEZONE = 'America/New_York';
 
-function toCase(o:Event):Case {
-  return {
+function toCase(o:Event, startDate?:Date, endDate?:Date):Case {
+  let c:Case = {
     uid: `${o.docket}-${o.county}-${o.division}`,
     number: o.docket,
-    date: o.date,
+    date: o.date[0],
     address: `${o.street} ${o.city}, VT`,
   };
+
+  // find a date that matches constraints
+  if (startDate && endDate) {
+    for (const date of o.date) {
+      if (date.valueOf() > startDate.valueOf() && date.valueOf() < endDate.valueOf()) {
+        c.date = date;
+        break;
+      }
+    }
+  }
+  else if (startDate && endDate == null) {
+    for (const date of o.date) {
+      if (date.valueOf() > startDate.valueOf()) {
+        c.date = date;
+        break;
+      }
+    }
+  }
+  else if (startDate == null && endDate) {
+    for (const date of o.date) {
+      if (date.valueOf() < endDate.valueOf()) {
+        c.date = date;
+        break;
+      }
+    }
+  }
+
+  return c;
 }
 
 type EventParams = {
@@ -51,7 +79,7 @@ export default class VtInstanceMethods implements IInstanceMethods {
     }
     const cases = await EventDao.find(params).lean().exec();
 
-    return cases.map(toCase);
+    return cases.map(o => toCase(o, obj.startDate, obj.endDate));
   }
 
   getTestCase(days:number) {
