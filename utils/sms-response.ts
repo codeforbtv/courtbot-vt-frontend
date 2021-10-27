@@ -22,11 +22,20 @@ const caseNotFound = (number:string) => {
 
 const caseFound = (cases:Case[], timezone = 'America/New_York') => {
   var resp = new MessagingResponse();
+  let message:String;
 
-  let message = `We found ${cases.length} case${cases.length > 1 ? 's' : ''}.\nReply with a # if you would like a courtesy reminder the day before or reply with NO to start over.\n`;
-  cases.forEach((c,i) => {
-    message += `\n${i+1} - ${moment(c.date).tz(timezone).format('l LT')} @ ${c.address}\n`;
-  });
+
+  if (cases.length === 1) {
+    const c = cases[0];
+    message = `We found a case on ${moment(c.date).tz(timezone).format('l LT')} @ ${c.address}.\nReply with YES if you would like a courtesy reminder the day before or reply with NO to start over.\n`;
+
+  }
+  else {
+    message = `We found ${cases.length} case${cases.length > 1 ? 's' : ''}.\nReply with a # if you would like a courtesy reminder the day before or reply with NO to start over.\n`;
+    cases.forEach((c,i) => {
+      message += `\n${i+1} - ${moment(c.date).tz(timezone).format('l LT')} @ ${c.address}\n`;
+    });  
+  }
   resp.message(message);
 
   return resp;

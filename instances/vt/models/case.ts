@@ -43,7 +43,7 @@ function toCase(o:Event, startDate?:Date, endDate?:Date):Case {
 }
 
 type EventParams = {
-  docket?: string;
+  docket?: string | RegExp;
   date?: {
     $gt?: Date;
     $lt?: Date;
@@ -65,7 +65,7 @@ export default class VtInstanceMethods implements IInstanceMethods {
     let params:EventParams = {};
 
     if (obj.number) {
-      params.docket = obj.number;
+      params.docket = new RegExp(`^${obj.number}$`, 'i');
     }
     if (obj.startDate || obj.endDate) {
       params.date = {};

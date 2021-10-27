@@ -31,14 +31,14 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
       default:
       case 'idle':
         // get the case number from the text
-        const caseNumber = message.trim().toLowerCase();
+        const caseNumber = message.trim();
 
         // see if the case number matches the testcase or the regex
-        if (instanceMethods.getNumberRegex().test(caseNumber) || caseNumber === 'testcase') {
+        if (instanceMethods.getNumberRegex().test(caseNumber) || caseNumber.toLowerCase() === 'testcase') {
           let cases;
 
           // if the case number is the test case then lets get one
-          if (caseNumber === 'testcase') {
+          if (caseNumber.toLowerCase() === 'testcase') {
             cases = [instanceMethods.getTestCase(2)];
           }
           // find future cases by number
@@ -76,31 +76,64 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
         // get the case from the cookie
         const cases = JSON.parse(req.cookies.cases);
         // get the text response
-        const response = message.trim().toLowerCase();
+        const response = message.trim();
         // parse the number out of the response
         // we'll do a check later to see if it was a valid number
         const index = parseInt(response) - 1;
 
         // no reminder, but let's send information their way
-        if (response === 'no') {
+        if (response.toLowerCase() === 'no') {
           res.send(smsResponse.reminderNo(instanceMethods.getWebsite()).toString());
         }
-        // create a reminder if a valid number was given
-        else if (response === parseInt(response).toString() && index >= 0 && index < cases.length) {
-          const c = cases[index];
+        // logic for when only 1 case was found
+        else if (cases.length === 1) {
+          // let's check for a yes
+          if (response.toLowerCase() === 'yes') {
+            let c = cases[0];
+            await ReminderDao.create({
+              uid: c.uid,
+              number: c.number,
+              phone,
+            });
 
-          // create a new reminder
-          await ReminderDao.create({
-            uid: c.uid,
-            number: c.number,
-            phone,
-          });
+            res.send(smsResponse.reminderYes(c).toString());
+          }
+          // send help due to unexpected response
+          else {
+            // set state
+            res.setHeader('Set-Cookie', [
+              serialize('state', String('case_found'), { maxAge }),
+              serialize('cases', String(JSON.stringify(cases)), { maxAge }),
+            ]);
 
-          res.send(smsResponse.reminderYes(c).toString());
+            // send help text
+            res.send(smsResponse.help(`Reply with a YES or NO`).toString());
+          }
         }
-        // send help due to unexpected response
+        // logic for when more than 1 case was found
         else {
-          res.send(smsResponse.help(instanceMethods.getHelpText()).toString());
+          // if a number was given lets check to see if it maps to a case index
+          if (response === parseInt(response).toString() && index >= 0 && index < cases.length) {
+            let c = cases[index];
+            await ReminderDao.create({
+              uid: c.uid,
+              number: c.number,
+              phone,
+            });
+
+            res.send(smsResponse.reminderYes(c).toString());
+          }
+          // send help due to unexpected response
+          else {
+            // set state
+            res.setHeader('Set-Cookie', [
+              serialize('state', String('case_found'), { maxAge }),
+              serialize('cases', String(JSON.stringify(cases)), { maxAge }),
+            ]);
+
+            // send help text
+            res.send(smsResponse.help(`Reply with a number between 1-${cases.length} or NO`).toString());
+          }
         }
         break;
     }
