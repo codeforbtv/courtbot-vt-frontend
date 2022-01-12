@@ -26,7 +26,7 @@ async function checkBasicAuth(req:NextApiRequest, res:NextApiResponse) {
 
     if (BASIC_AUTH_USERNAME && BASIC_AUTH_PASSWORD && user === BASIC_AUTH_USERNAME && password === BASIC_AUTH_PASSWORD) {
       isAuthenticated = true;
-      logger.info(`Authentication successful: ${user}`);
+      logger.debug(`Authentication successful: ${user}`);
     }
     else {
       res.setHeader("WWW-Authenticate", 'Basic realm="Protected"');

@@ -60,6 +60,7 @@ const ReminderSchema = new mongoose.Schema<Reminder>({
 async function initialize() {
   if (conn == null) {
     conn = await mongoose.createConnection(process.env.MONGODB_URI || '', {
+      useCreateIndex: true,
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,

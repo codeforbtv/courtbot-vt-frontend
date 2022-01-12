@@ -82,6 +82,7 @@ EventSchema.index({ docket: 1, county: 1, division: 1 }, { unique: true });
 async function initialize() {
   if (conn == null) {
     conn = await mongoose.createConnection(process.env.VT_MONGODB_URI || '', {
+      useCreateIndex: true,
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,

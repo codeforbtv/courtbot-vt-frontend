@@ -6,12 +6,13 @@ import checkBasicAuth from '../../../../utils/basic-auth';
 import { getInstanceMethods } from '../../../../types/i-instance-methods';
 import { initialize, ReminderDao } from '../../../../dao/mongoose';
 
-const maxAge = 60 * 60; // 1 hour
+const maxAge = 60 * 15; // 10 minutes
 
-const handleText = async (req:NextApiRequest, res:NextApiResponse, message:string, phone:string) => {
+const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string, phone:string) => {
   await initialize();
   const { instance } = req.query;
   const instanceMethods = await getInstanceMethods(Array.isArray(instance) ? instance[0]: instance);
+  const cookies = req.cookies;
   try {
     // clear all cookies
     res.setHeader('Set-Cookie', [
@@ -19,9 +20,16 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
       serialize('case', '', { maxAge: -1 }),
     ]);
     // get the state from the cookie if it exists
-    const state = req.cookies.state || 'idle';
+    const state = cookies.state || 'idle';
 
-    logger.info(`${phone} (${instance})[${state}]: ${message}`);
+    logger.info(`${phone} (${instance})[${state}]: response received`, { metadata: {
+      service: `/api/sms/${instance}`,
+      cookies,
+      instance,
+      input,
+      phone,
+      state,
+    }});
 
     // set the response to type xml
     res.setHeader('Content-Type', 'text/xml');
@@ -31,7 +39,7 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
       default:
       case 'idle':
         // get the case number from the text
-        const caseNumber = message.trim();
+        const caseNumber = input.trim();
 
         // see if the case number matches the testcase or the regex
         if (instanceMethods.getNumberRegex().test(caseNumber) || caseNumber.toLowerCase() === 'testcase') {
@@ -56,6 +64,16 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
               cases = [cases];
             }
 
+            logger.info(`${phone} (${instance})[${state}]: case found`, { metadata: {
+              service: `/api/sms/${instance}`,
+              cookies,
+              instance,
+              input,
+              phone,
+              state,
+              result: 'case found',
+            }});
+
             res.setHeader('Set-Cookie', [
               serialize('state', String('case_found'), { maxAge }),
               serialize('cases', String(JSON.stringify(cases)), { maxAge }),
@@ -64,25 +82,52 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
           }
           // case not found
           else {
+            logger.warn(`${phone} (${instance})[${state}]: case not found`, { metadata: {
+              service: `/api/sms/${instance}`,
+              cookies,
+              instance,
+              input,
+              phone,
+              state,
+              result: 'case not found',
+            }});
             res.send(smsResponse.caseNotFound(caseNumber).toString());
           }
         }
         // send help response
         else {
-          res.send(smsResponse.help(instanceMethods.getHelpText()).toString());
+          logger.warn(`${phone} (${instance})[${state}]: case not matching regex`, { metadata: {
+            service: `/api/sms/${instance}`,
+            cookies,
+            instance,
+            input,
+            phone,
+            state,
+            result: 'case not matching regex',
+          }});
+        res.send(smsResponse.help(instanceMethods.getHelpText()).toString());
         }
         break;
       case 'case_found':
         // get the case from the cookie
         const cases = JSON.parse(req.cookies.cases);
         // get the text response
-        const response = message.trim();
+        const response = input.trim();
         // parse the number out of the response
         // we'll do a check later to see if it was a valid number
         const index = parseInt(response) - 1;
 
         // no reminder, but let's send information their way
         if (response.toLowerCase() === 'no') {
+          logger.info(`${phone} (${instance})[${state}]: no reminder set`, { metadata: {
+            service: `/api/sms/${instance}`,
+            cookies,
+            instance,
+            input,
+            phone,
+            state,
+            result: 'no reminder set',
+          }});
           res.send(smsResponse.reminderNo(instanceMethods.getWebsite()).toString());
         }
         // logic for when only 1 case was found
@@ -96,6 +141,16 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
               phone,
             });
 
+            logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
+              service: `/api/sms/${instance}`,
+              cookies,
+              instance,
+              input,
+              phone,
+              case: c,
+              state,
+              result: 'reminder set',
+            }});
             res.send(smsResponse.reminderYes(c).toString());
           }
           // send help due to unexpected response
@@ -106,6 +161,15 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
               serialize('cases', String(JSON.stringify(cases)), { maxAge }),
             ]);
 
+            logger.warn(`${phone} (${instance})[${state}]: unexpected input`, { metadata: {
+              service: `/api/sms/${instance}`,
+              cookies,
+              instance,
+              input,
+              phone,
+              state,
+              result: 'unexpected input',
+            }});
             // send help text
             res.send(smsResponse.help(`Reply with a YES or NO`).toString());
           }
@@ -121,6 +185,16 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
               phone,
             });
 
+            logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
+              service: `/api/sms/${instance}`,
+              cookies,
+              instance,
+              input,
+              phone,
+              case: c,
+              state,
+              result: 'reminder set',
+            }});
             res.send(smsResponse.reminderYes(c).toString());
           }
           // send help due to unexpected response
@@ -131,6 +205,16 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
               serialize('cases', String(JSON.stringify(cases)), { maxAge }),
             ]);
 
+            logger.warn(`${phone} (${instance})[${state}]: unexpected input`, { metadata: {
+              service: `/api/sms/${instance}`,
+              cookies,
+              instance,
+              input,
+              phone,
+              state,
+              result: 'unexpected input',
+            }});
+
             // send help text
             res.send(smsResponse.help(`Reply with a number between 1-${cases.length} or NO`).toString());
           }
@@ -138,7 +222,13 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, message:strin
         break;
     }
   } catch (error) {
-    logger.error(error);
+    logger.error(error, { metadata: {
+      service: `/api/sms/${instance}`,
+      cookies,
+      instance,
+      input,
+      phone,
+    }});
     res.send(smsResponse.error().toString());
   }
 }
