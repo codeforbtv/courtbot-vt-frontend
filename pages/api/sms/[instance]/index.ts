@@ -22,7 +22,7 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
     // get the state from the cookie if it exists
     const state = cookies.state || 'idle';
 
-    logger.info(`${phone} (${instance})[${state}]: response received`, { metadata: {
+    logger.debug(`${phone} (${instance})[${state}]: response received`, { metadata: {
       service: `/api/sms/${instance}`,
       cookies,
       instance,
