@@ -10,7 +10,7 @@ const {
   MONGODB_URI,
 } = process.env;
 
-const myFormat = printf(({ level, message, timestamp, metadata }) => {
+const myFormat = printf(({ level, message, timestamp, metadata }:any) => {
   return `${timestamp} [${level}]: ${message}${metadata ? ` | ${JSON.stringify(metadata)}` : ''}`;
 });
 
