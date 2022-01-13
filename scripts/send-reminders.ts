@@ -77,7 +77,7 @@ const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWIL
                 logger.info(JSON.stringify(options), { metadata: {
                   service: `send-reminders.ts`,
                   instance,
-                  reminder,
+                  reminder: reminder.toJSON(),
                 }});
                 await client.messages.create(options);
 
@@ -97,7 +97,7 @@ const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWIL
               logger.error(ex, { metadata: {
                 service: `send-reminders.ts`,
                 instance,
-                reminder,
+                reminder: reminder.toJSON(),
               }});
             }
           }
