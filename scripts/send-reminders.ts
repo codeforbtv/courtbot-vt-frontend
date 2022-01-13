@@ -78,6 +78,7 @@ const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWIL
                   service: `send-reminders.ts`,
                   instance,
                   reminder: reminder.toJSON(),
+                  case: c,
                 }});
                 await client.messages.create(options);
 
