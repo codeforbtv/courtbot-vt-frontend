@@ -1,9 +1,14 @@
 import mongoose, { Connection, Model } from 'mongoose';
-import { Notification, Reminder } from '../types';
+import { Log, Notification, Reminder } from '../types';
 
 let conn:Connection;
 let NotificationDao:Model<Notification>;
 let ReminderDao:Model<Reminder>;
+let LogDao:Model<Log>;
+
+const {
+  LOG_COLLECTION = 'log',
+} = process.env;
 
 const NotificationSchema = new mongoose.Schema<Notification>({
   uid: {
@@ -57,6 +62,32 @@ const ReminderSchema = new mongoose.Schema<Reminder>({
   timestamps: true,
 });
 
+const LogSchema = new mongoose.Schema<Log>({
+  uid: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  number: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  active: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
+},{
+  collection: LOG_COLLECTION,
+  timestamps: true,
+});
+
 async function initialize() {
   if (conn == null) {
     conn = await mongoose.createConnection(process.env.MONGODB_URI || '', {
@@ -67,11 +98,13 @@ async function initialize() {
     });
     NotificationDao = conn.model<Notification>('Notification', NotificationSchema);
     ReminderDao = conn.model<Reminder>('Reminder', ReminderSchema);
+    LogDao = conn.model<Log>('Log', LogSchema);
   }
 }
 
 export {
   initialize,
+  LogDao,
   NotificationDao,
   ReminderDao,
 };
