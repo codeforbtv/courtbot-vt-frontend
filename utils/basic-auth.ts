@@ -4,6 +4,8 @@ import logger from './logger';
 const {
   BASIC_AUTH_USERNAME,
   BASIC_AUTH_PASSWORD,
+  BASIC_AUTH_METRICS_USERNAME,
+  BASIC_AUTH_METRICS_PASSWORD,
 } = process.env;
 
 const headerToBase64 = (header:string) => {
@@ -15,7 +17,7 @@ const headerToBase64 = (header:string) => {
   return [user, password]
 }
 
-async function checkBasicAuth(req:NextApiRequest, res:NextApiResponse) {
+export default async function checkBasicAuth (req:NextApiRequest, res:NextApiResponse) {
   let isAuthenticated = false;
   if (!req.headers.authorization) {
     res.setHeader("WWW-Authenticate", 'Basic realm="Protected"');
@@ -38,4 +40,25 @@ async function checkBasicAuth(req:NextApiRequest, res:NextApiResponse) {
   return isAuthenticated;
 }
 
-export default checkBasicAuth;
+export async function checkBasicAuthForMetrics(req:NextApiRequest, res:NextApiResponse) {
+  let isAuthenticated = false;
+  if (!req.headers.authorization) {
+    res.setHeader("WWW-Authenticate", 'Basic realm="Protected"');
+    res.statusCode = 401;
+    res.end("Unauthorized");
+  } else {
+    const [user, password] = headerToBase64(req.headers.authorization);
+
+    if (BASIC_AUTH_METRICS_USERNAME && BASIC_AUTH_METRICS_PASSWORD && user === BASIC_AUTH_METRICS_USERNAME && password === BASIC_AUTH_METRICS_PASSWORD) {
+      isAuthenticated = true;
+      logger.debug(`Authentication successful: ${user}`);
+    }
+    else {
+      res.setHeader("WWW-Authenticate", 'Basic realm="Protected"');
+      res.statusCode = 401;
+      logger.error(`Authentication not successful: ${user}`);
+    }
+  }
+
+  return isAuthenticated;
+}

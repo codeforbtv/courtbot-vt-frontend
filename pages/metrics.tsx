@@ -2,6 +2,8 @@ import Head from 'next/head';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Chart, registerables } from 'chart.js';
+import { checkBasicAuthForMetrics } from '../utils/basic-auth';
+
 
 const ranges = [
   {
@@ -17,6 +19,16 @@ const ranges = [
       title: '30 days',
   },
 ];
+
+export async function getServerSideProps(ctx) {
+  const {req, res} = ctx
+
+  await checkBasicAuthForMetrics(req, res)
+
+  return {
+    props: {}
+  }
+}
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);

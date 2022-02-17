@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import moment from 'moment-timezone';
 import logger from '../../../utils/logger';
-import checkBasicAuth from '../../../utils/basic-auth';
+import { checkBasicAuthForMetrics } from '../../../utils/basic-auth';
 import { initialize, LogDao } from '../../../dao/mongoose';
 
 export default async function handler(req:NextApiRequest, res:NextApiResponse) {
-  // if (await checkBasicAuth(req, res)) {
+  if (await checkBasicAuthForMetrics(req, res)) {
     await initialize();
     const { method } = req;
     const instance = req.query.instance ? Array.isArray(req.query.instance) ? req.query.instance[0]: req.query.instance : 'vt';
@@ -77,7 +77,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
           .json({ success: false });
         break;
     }
-  // }
+  }
 
   res.end();
 };

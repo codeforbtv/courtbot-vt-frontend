@@ -27,6 +27,9 @@ MONGODB_URI=Your-MongoDB-URI
 LOG_LEVEL=Log-Level
 BASIC_AUTH_USERNAME=username-for-basic-auth
 BASIC_AUTH_PASSWORD=password-for-basic-auth
+BASIC_AUTH_METRICS_USERNAME=username-for-metrics-page
+BASIC_AUTH_METRICS_PASSWORD=password-for-metrics-page
+
 ```
 
 ## util scripts
