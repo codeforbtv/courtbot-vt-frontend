@@ -1,9 +1,10 @@
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Chart, registerables } from 'chart.js';
 import { checkBasicAuthForMetrics } from '../utils/basic-auth';
-
+import { ActivityEntry } from '../types/activity-entry';
 
 const ranges = [
   {
@@ -20,9 +21,10 @@ const ranges = [
   },
 ];
 
-export async function getServerSideProps(ctx) {
-  const {req, res} = ctx
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const {req, res} = context;
 
+  // @ts-ignore
   await checkBasicAuthForMetrics(req, res)
 
   return {
@@ -32,7 +34,7 @@ export async function getServerSideProps(ctx) {
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
-  const [chart, setChart] = useState();
+  const [chart, setChart] = useState<Chart>();
   const [range, setRange] = useState(30);
   const canvas = useRef(null);
 
@@ -40,87 +42,99 @@ export default function Home() {
     Chart.register(...registerables);
 
     // create chart
-    const myChart = Chart.getChart(canvas.current.getContext('2d'));
-    if (myChart) { myChart.destroy(); }
-    setChart(new Chart(canvas.current.getContext('2d'), {
-      type: 'bar',
-      options: {
-        maintainAspectRatio: false,
-        interaction: {
-          intersect: false,
-          mode: 'index',
+    // @ts-ignore
+    const context = canvas?.current?.getContext('2d');
+    if (context) {
+      const myChart = Chart.getChart(context);
+      if (myChart) { myChart.destroy(); }
+      setChart(new Chart(context, {
+        type: 'bar',
+        data: {
+          datasets: [],
         },
-        scales: {
-          x: {
-            stacked: true,
+        options: {
+          maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: 'index',
           },
-          y: {
-            type: 'linear',
-            beginAtZero: true,
-            display: true,
-            position: 'left',
-            stacked: true,
-          },
+          scales: {
+            x: {
+              stacked: true,
+            },
+            y: {
+              type: 'linear',
+              beginAtZero: true,
+              display: true,
+              position: 'left',
+              stacked: true,
+            },
+          }
         }
-      }
-    }));
+      }));
+    }
   }, []);
 
-  useEffect(async () => {
-    if (chart) {
-      setIsLoading(true);
-      // get metrics
-      const response = await axios({
-        method: 'get',
-        url: '/api/metrics',
-        params: {
-          instance: 'vt',
-          range,
-        }
-      });
-
-      const data = response.data;
-      chart.data = {
-        datasets: [
-          {
-            data: data.activity.map(o => {
-              return {
-                x: o.date,
-                y: o['case found'],
-              };
-            }),
-            yAxisID: 'y',
-            backgroundColor: 'rgba(54, 162, 235, 1)',
-            label: 'Case Found',
-          },
-          {
-            data: data.activity.map(o => {
-              return {
-                x: o.date,
-                y: o['case not found'],
-              };
-            }),
-            yAxisID: 'y',
-            backgroundColor: 'rgba(255, 159, 64, 1)',
-            label: 'Case Not Found',
-          },
-          {
-            data: data.activity.map(o => {
-              return {
-                x: o.date,
-                y: o['case not matching regex'],
-              };
-            }),
-            yAxisID: 'y',
-            backgroundColor: 'rgba(255, 99, 132, 1)',
-            label: 'Invalid Input',
-          },
-        ]
-      };
-      chart.update();
-
-      setIsLoading(false);
-    }
+  useEffect(() => {
+    (async function(x) {
+      if (chart) {
+        setIsLoading(true);
+        // get metrics
+        const response = await axios({
+          method: 'get',
+          url: '/api/metrics',
+          params: {
+            instance: 'vt',
+            range,
+          }
+        });
+  
+        const data = response.data;
+        chart.data = {
+          datasets: [
+            {
+              // @ts-ignore
+              data: data.activity.map(o => {
+                return {
+                  x: o.date,
+                  y: o['case found'],
+                };
+              }),
+              yAxisID: 'y',
+              backgroundColor: 'rgba(54, 162, 235, 1)',
+              label: 'Case Found',
+            },
+            {
+              // @ts-ignore
+              data: data.activity.map(o => {
+                return {
+                  x: o.date,
+                  y: o['case not found'],
+                };
+              }),
+              yAxisID: 'y',
+              backgroundColor: 'rgba(255, 159, 64, 1)',
+              label: 'Case Not Found',
+            },
+            {
+              // @ts-ignore
+              data: data.activity.map(o => {
+                return {
+                  x: o.date,
+                  y: o['case not matching regex'],
+                };
+              }),
+              yAxisID: 'y',
+              backgroundColor: 'rgba(255, 99, 132, 1)',
+              label: 'Invalid Input',
+            },
+          ]
+        };
+        chart.update();
+  
+        setIsLoading(false);
+      }
+    })()
   }, [chart, range]);
 
   return (

@@ -3,6 +3,15 @@ import moment from 'moment-timezone';
 import logger from '../../../utils/logger';
 import { checkBasicAuthForMetrics } from '../../../utils/basic-auth';
 import { initialize, LogDao } from '../../../dao/mongoose';
+import { ActivityEntry } from '../../../types/activity-entry';
+
+type logEntry = {
+  _id: {
+    date: string;
+    type: string
+  },
+  count: number;
+};
 
 export default async function handler(req:NextApiRequest, res:NextApiResponse) {
   if (await checkBasicAuthForMetrics(req, res)) {
@@ -15,7 +24,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
   
     switch (method) {
       case 'GET':
-        const logEntries = await LogDao.aggregate([
+        const logEntries:Array<logEntry> = await LogDao.aggregate([
           {
             '$match': {
               'meta.instance': instance,
@@ -50,25 +59,26 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
         ]).exec();
 
         // build a map of dates
-        const activity = {};
+        const activity = new Map<string, ActivityEntry>();
         for (let i = 0; i < range; i++) {
           const date = minDate.toISOString().split('T')[0];
-          activity[date] = {
+          activity.set(date, {
             date,
             "case found": 0,
             "case not found": 0,
             "case not matching regex": 0,
-          };
+          });
           minDate.add(1, 'days');
         }
 
         // go thru each aggregation and add to map
         logEntries.forEach(o => {
-          activity[o._id.date][o._id.type] = o.count;
+          // @ts-ignore
+          activity.get(o._id.date)[o._id.type] = o.count;
         });
 
         res.send({
-          activity: Object.values(activity),
+          activity: Array.from(activity.values()),
         });
         break;
       default:
