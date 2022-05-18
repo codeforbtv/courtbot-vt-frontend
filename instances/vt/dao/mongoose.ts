@@ -4,80 +4,113 @@ let conn:Connection;
 let EventDao:Model<Event>;
 
 export interface Event {
-  docket: string;
-  date: Array<Date>;
-  county: string;
-  court_room: string;
-  hearing_type: string;
-  day_of_week: string;
-  day: string;
-  month: string;
-  time: string;
-  am_pm: string;
-  street: string;
-  city: string;
-  zip_code: string;
+  _id: string;
+  date: Date;
+  county: {
+      code: string;
+      name: string;
+  },
   division: string;
-  subdivision: string;
+  judge: {
+      code: string;
+      name: string;
+  },
+  court_room_code: string;
+  hearing: {
+      date: string;
+      start_time: string;
+      type_code: string;
+      type: string;
+  },
+  doc_id: string;
+  docket_number: string;
+  case: {
+      name: string;
+      status: string;
+      type: string;
+  },
+  litigant: {
+      entity_id: string;
+      last_name: string;
+      first_name: string;
+      full_name: string;
+      role: {
+          code: string;
+          rank: string;
+          description: string;
+      },
+      number: string;
+  },
+  attorney: {
+      entity_id: string;
+      last_name: string;
+      first_name: string;
+      suffix: string;
+      full_name: string;
+  },
+  calendar_id: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const EventSchema = new mongoose.Schema<Event>({
-  docket: {
-    type: String,
-    required: true,
-    index: true,
-  },
+  _id: String,
   date: {
-    type: [Date],
+    type: Date,
     required: true,
     index: true,
   },
   county: {
-    type: String,
+      code: String,
+      name: String,
   },
-  court_room: {
-    type: String,
+  division: String,
+  judge: {
+      code: String,
+      name: String,
   },
-  hearing_type: {
-    type: String,
+  court_room_code: String,
+  hearing: {
+      date: String,
+      start_time: String,
+      type_code: String,
+      type: String,
   },
-  day_of_week: {
+  doc_id: String,
+  docket_number: {
     type: String,
+    required: true,
+    index: true,
   },
-  day: {
-    type: String,
+  case: {
+      name: String,
+      status: String,
+      type: String,
   },
-  month: {
-    type: String,
+  litigant: {
+      entity_id: String,
+      last_name: String,
+      first_name: String,
+      full_name: String,
+      role: {
+          code: String,
+          rank: String,
+          description: String,
+      },
+      number: String,
   },
-  time: {
-    type: String,
+  attorney: {
+      entity_id: String,
+      last_name: String,
+      first_name: String,
+      suffix: String,
+      full_name: String,
   },
-  am_pm: {
-    type: String,
-  },
-  street: {
-    type: String,
-  },
-  city: {
-    type: String,
-  },
-  zip_code: {
-    type: String,
-  },
-  division: {
-    type: String,
-  },
-  subdivision: {
-    type: String,
-  },
+  calendar_id: String,
 },{
   timestamps: true,
+  collection: process.env.VT_MONGODB_EVENTS_COLLECTION_NAME || 'events',
 });
-
-EventSchema.index({ docket: 1, county: 1, division: 1 }, { unique: true });
 
 async function initialize() {
   if (conn == null) {
