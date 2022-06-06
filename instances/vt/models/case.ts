@@ -1,4 +1,5 @@
 import moment from 'moment-timezone';
+import _ from 'lodash';
 
 import { Case, IInstanceMethods } from '../../../types';
 import { initialize, Event, EventDao } from '../dao/mongoose';
@@ -7,35 +8,26 @@ const TIMEZONE = 'America/New_York';
 
 function toCase(o:Event, startDate?:Date, endDate?:Date):Case {
   let c:Case = {
-    uid: `${o.docket}-${o.county}-${o.division}`,
-    number: o.docket,
-    date: o.date[0],
-    address: `${o.street} ${o.city}, VT`,
+    uid: o._id,
+    number: o.docket_number,
+    date: o.date,
+    address: `${o.court_room_code} ${o.county.name}, VT`,
   };
 
   // find a date that matches constraints
   if (startDate && endDate) {
-    for (const date of o.date) {
-      if (date.valueOf() > startDate.valueOf() && date.valueOf() < endDate.valueOf()) {
-        c.date = date;
-        break;
-      }
+    if (o.date.valueOf() > startDate.valueOf() && o.date.valueOf() < endDate.valueOf()) {
+      c.date = o.date;
     }
   }
   else if (startDate && endDate == null) {
-    for (const date of o.date) {
-      if (date.valueOf() > startDate.valueOf()) {
-        c.date = date;
-        break;
-      }
+    if (o.date.valueOf() > startDate.valueOf()) {
+      c.date = o.date;
     }
   }
   else if (startDate == null && endDate) {
-    for (const date of o.date) {
-      if (date.valueOf() < endDate.valueOf()) {
-        c.date = date;
-        break;
-      }
+    if (o.date.valueOf() < endDate.valueOf()) {
+      c.date = o.date;
     }
   }
 
@@ -43,7 +35,7 @@ function toCase(o:Event, startDate?:Date, endDate?:Date):Case {
 }
 
 type EventParams = {
-  docket?: string | RegExp;
+  docket_number?: string | RegExp;
   date?: {
     $gt?: Date;
     $lt?: Date;
@@ -65,7 +57,7 @@ export default class VtInstanceMethods implements IInstanceMethods {
     let params:EventParams = {};
 
     if (obj.number) {
-      params.docket = new RegExp(`^${obj.number}$`, 'i');
+      params.docket_number = new RegExp(`${obj.number}`, 'i');
     }
     if (obj.startDate || obj.endDate) {
       params.date = {};
@@ -77,9 +69,18 @@ export default class VtInstanceMethods implements IInstanceMethods {
         params.date.$lt = obj.endDate;
       }
     }
-    const cases = await EventDao.find(params).lean().exec();
+    const allCases = await EventDao.find(params).lean().exec();
 
-    return cases.map(o => toCase(o, obj.startDate, obj.endDate));
+    const uniqueCases:Event[] = [];
+    const uniqueDocketNumbers:String[] = [];
+    allCases.forEach(o => {
+      if (uniqueDocketNumbers.indexOf(o.docket_number) === -1) {
+        uniqueCases.push(o);
+        uniqueDocketNumbers.push(o.docket_number);
+      }
+    });
+
+    return uniqueCases.map(o => toCase(o, obj.startDate, obj.endDate));
   }
 
   getTestCase(days:number) {
