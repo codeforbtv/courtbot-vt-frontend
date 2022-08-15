@@ -1,0 +1,43 @@
+@startuml
+storage idle
+
+storage case_found
+
+rectangle n1 [
+user input
+matches regex
+and case(s) found
+]
+idle -right-> n1
+n1 -right-> case_found
+
+rectangle n2 [
+user input
+not match regex
+send help response
+]
+idle -down-> n2
+n2 --> idle
+
+rectangle n3 [
+user input
+matches regex
+but no case(s) found
+]
+idle -up-> n3
+n3 --> idle
+
+rectangle n4 [
+user signs up
+for a case
+]
+case_found -up-> n4
+n4 --> idle
+
+rectangle n5 [
+user says no
+to the case
+]
+case_found -down-> n5
+n5 --> idle
+@enduml
