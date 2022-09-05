@@ -9,7 +9,7 @@
 
 ### User successfully finds a case and signs up for a reminder
 
-TODO
+![User successfully finds a case and signs up for a reminder](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/codeforbtv/courtbot-vt-frontend/main/docs/use-cases/case-found-sign-up-for-reminder.puml)
 
 ### User doesn't find a case
 
