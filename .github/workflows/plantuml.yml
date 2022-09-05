@@ -1,3 +1,5 @@
+name: embed plantuml
+on: push
 jobs:
   embed-puml-markdown:
     - name: Check out the repo
