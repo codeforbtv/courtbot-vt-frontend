@@ -2,7 +2,7 @@
 
 ## User successfully finds a case and signs up for a reminder
 
-<!-- ![User successfully finds a case and signs up for a reminder](./diagrams/case-found-sign-up-for-reminder.puml) -->
+<!--![User successfully finds a case and signs up for a reminder](./diagrams/case-found-sign-up-for-reminder.puml)-->
 
 ## User doesn't find a case
 
