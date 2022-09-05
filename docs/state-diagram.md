@@ -2,14 +2,14 @@
 
 ## State Diagram
 
-![State Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/codeforbtv/courtbot-vt-frontend/main/docs/diagrams/state-diagram.puml)
+![State Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/codeforbtv/courtbot-vt-frontend/{branch}/docs/diagrams/state-diagram.puml)
 
 
 ## Use Cases
 
 ### User successfully finds a case and signs up for a reminder
 
-![User successfully finds a case and signs up for a reminder](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/codeforbtv/courtbot-vt-frontend/main/docs/diagrams/case-found-sign-up-for-reminder.puml)
+![User successfully finds a case and signs up for a reminder](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/codeforbtv/courtbot-vt-frontend/{branch}/docs/diagrams/case-found-sign-up-for-reminder.puml)
 
 ### User doesn't find a case
 
