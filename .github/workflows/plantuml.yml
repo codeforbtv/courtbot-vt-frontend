@@ -1,7 +1,10 @@
 name: Generate PlantUML Diagrams
-on: push
+on:
+  push:
+    paths:
+      - '**.puml'
 jobs:
-  ci:
+  generate_plantuml:
     runs-on: ubuntu-latest
     env:
         UML_FILES: ".puml"

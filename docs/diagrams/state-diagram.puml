@@ -1,5 +1,4 @@
 @startuml
-
 storage idle
 
 storage case_found
@@ -41,5 +40,4 @@ to the case
 ]
 case_found -down-> n5
 n5 --> idle
-
 @enduml
