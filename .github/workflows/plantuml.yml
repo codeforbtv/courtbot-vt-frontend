@@ -2,6 +2,9 @@ name: embed plantuml
 on: push
 jobs:
   embed-puml-markdown:
+    runs-on: ubuntu-latest
+    name: plantuml
+    steps:
     - name: Check out the repo
       uses: actions/checkout@v2
       with:
