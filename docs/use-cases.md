@@ -6,16 +6,16 @@
 
 ## User doesn't find a case
 
-<!--![User doesn't find a case](./diagrams/case-not-found.puml)-->
+[![User doesn't find a case](https://tinyurl.com/2lvkrgqy)](https://tinyurl.com/2lvkrgqy)<!--![User doesn't find a case](./diagrams/case-not-found.puml)-->
 
 ## User enters an input that doesn't match regex
 
-<!--![User enters an input that doesn't match regex](./diagrams/regex-not-matched.puml)-->
+[![User enters an input that doesn't match regex](https://tinyurl.com/2qxcmv9a)](https://tinyurl.com/2qxcmv9a)<!--![User enters an input that doesn't match regex](./diagrams/regex-not-matched.puml)-->
 
 ## User finds a case but doesn't sign up for notification
 
-<!--![User finds a case but doesn't sign up for notification](./diagrams/case-found-no-reminder-set.puml)-->
+[![User finds a case but doesn't sign up for notification](https://tinyurl.com/2qocujgf)](https://tinyurl.com/2qocujgf)<!--![User finds a case but doesn't sign up for notification](./diagrams/case-found-no-reminder-set.puml)-->
 
 ## User finds multiple cases
 
-<!--![User finds multiple cases](./diagrams/multiple-cases.puml)-->
+[![User finds multiple cases](https://tinyurl.com/2lefvfpl)](https://tinyurl.com/2lefvfpl)<!--![User finds multiple cases](./diagrams/multiple-cases.puml)-->
