@@ -1,8 +1,6 @@
 @startuml
 skinparam sequenceMessageAlign center
 
-title Case Found & Signed Up For Reminder
-
 User -> Server: not a valid input
 Server -> User: Reply with a docket number to sign up for a reminder. Docket numbers look like 3 sets of numbers or characters. For example: 123-45-67 or 123-CR-45.
 @enduml

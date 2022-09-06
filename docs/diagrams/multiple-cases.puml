@@ -1,8 +1,6 @@
 @startuml
 skinparam sequenceMessageAlign center
 
-title Case Found & Signed Up For Reminder
-
 User -> Server: 01-AB-23456
 Server -> User: We found 3 cases.\nReply with a # if you would like a courtesy reminder the day before or reply with NO to start over.\n1 - "01-AB-23456" on 7/28/2022 1:00 PM @ Family/Criminal Courtroom 2A Chittenden, VT.\n2 - "01-AB-23456" on 8/1/2022 1:00 PM @ Family/Criminal Courtroom 2A Chittenden, VT.\n3 - "01-AB-23456" on 8/5/2022 1:00 PM @ Family/Criminal Courtroom 2A Chittenden, VT.
 User -> Server: 2
