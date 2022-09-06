@@ -1,0 +1,8 @@
+@startuml
+skinparam sequenceMessageAlign center
+
+title Case Found & Signed Up For Reminder
+
+User -> Server: 01-NOT-FOUND
+Server -> User: We did not find any cases that match 01-NOT-FOUND
+@enduml

@@ -6,16 +6,16 @@
 
 ## User doesn't find a case
 
-TODO
+<!--![User doesn't find a case](./diagrams/case-not-found.puml)-->
 
 ## User enters an input that doesn't match regex
 
-TODO
+<!--![User enters an input that doesn't match regex](./diagrams/regex-not-matched.puml)-->
 
 ## User finds a case but doesn't sign up for notification
 
-TODO
+<!--![User finds a case but doesn't sign up for notification](./diagrams/case-found-no-reminder-set.puml)-->
 
 ## User finds multiple cases
 
-TODO
+<!--![User finds multiple cases](./diagrams/multiple-cases.puml)-->
