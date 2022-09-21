@@ -1,0 +1,6 @@
+@startuml
+skinparam sequenceMessageAlign center
+
+User -> Server: 01-NOT-FOUND
+Server -> User: We did not find any cases that match 01-NOT-FOUND
+@enduml

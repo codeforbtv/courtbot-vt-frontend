@@ -1,0 +1,8 @@
+@startuml
+skinparam sequenceMessageAlign center
+
+User -> Server: 01-AB-23456
+Server -> User: We found case "01-AB-23456" on 7/28/2022 1:00 PM @ Family/Criminal Courtroom 2A Chittenden, VT.\nReply with YES if you would like a courtesy reminder the day before or reply with NO to start over.
+User -> Server: No
+Server -> User: You said no so we won't text you a reminder. You can always go to https://www.vermontjudiciary.org/court-hearings for more information about your case.
+@enduml

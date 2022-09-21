@@ -1,0 +1,18 @@
+name: embed plantuml
+on: push
+jobs:
+  embed-puml-markdown:
+    runs-on: ubuntu-latest
+    name: plantuml
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Embed PlantUML inside Markdown
+      uses: alessandro-marcantoni/puml-markdown@v0.1.1
+    - name: Push Local Changes
+      uses: stefanzweifel/git-auto-commit-action@v4.1.2
+      with:
+        commit_message: "Generate PlantUML diagrams"
+        branch: ${{ github.head_ref }}
