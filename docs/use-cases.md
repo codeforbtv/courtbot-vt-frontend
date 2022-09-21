@@ -19,3 +19,7 @@
 ## User finds multiple cases
 
 [![User finds multiple cases](https://tinyurl.com/2nab39j3)](https://tinyurl.com/2nab39j3)<!--![User finds multiple cases](./diagrams/multiple-cases.puml)-->
+
+## User finds multiple cases but replies no
+
+<!--![User finds multiple cases but replies no](./diagrams/multiple-cases-no-reminder-set.puml)-->
