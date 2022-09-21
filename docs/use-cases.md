@@ -22,4 +22,4 @@
 
 ## User finds multiple cases but replies no
 
-<!--![User finds multiple cases but replies no](./diagrams/multiple-cases-no-reminder-set.puml)-->
+[![User finds multiple cases but replies no](https://tinyurl.com/2r24h7rq)](https://tinyurl.com/2r24h7rq)<!--![User finds multiple cases but replies no](./diagrams/multiple-cases-no-reminder-set.puml)-->
