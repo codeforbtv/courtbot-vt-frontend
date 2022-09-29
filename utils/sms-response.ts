@@ -41,9 +41,9 @@ const caseFound = (cases:Case[], timezone = 'America/New_York') => {
   return resp;
 };
 
-const reminderYes = (c:Case) => {
+const reminderYes = (c:Case, timezone = 'America/New_York') => {
   var resp = new MessagingResponse();
-  resp.message(`Reminder set for case (${c.number})`);
+  resp.message(`Reminder set for case (${c.number}) on ${moment(c.date).tz(timezone).format('l LT')}`);
   return resp;
 };
 

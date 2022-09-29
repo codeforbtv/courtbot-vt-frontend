@@ -8,6 +8,8 @@ let LogDao:Model<Log>;
 
 const {
   LOG_COLLECTION = 'log',
+  NOTIFICATION_COLLECTION = 'notifications',
+  REMINDER_COLLECTION = 'reminders',
 } = process.env;
 
 const NotificationSchema = new mongoose.Schema<Notification>({
@@ -34,6 +36,7 @@ const NotificationSchema = new mongoose.Schema<Notification>({
     type: String,
   },
 },{
+  collection: NOTIFICATION_COLLECTION,
   timestamps: true,
 });
 
@@ -59,6 +62,7 @@ const ReminderSchema = new mongoose.Schema<Reminder>({
     default: true,
   },
 },{
+  collection: REMINDER_COLLECTION,
   timestamps: true,
 });
 
