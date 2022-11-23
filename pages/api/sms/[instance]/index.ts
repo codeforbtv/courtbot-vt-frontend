@@ -134,23 +134,33 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
         else if (cases.length === 1) {
           // let's check for a yes
           if (response.toLowerCase() === 'yes') {
-            let c = cases[0];
-            await ReminderDao.create({
+            const c = cases[0];
+
+            const documentCount = await ReminderDao.countDocuments({
               uid: c.uid,
               number: c.number,
               phone,
             });
 
-            logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
-              service: `/api/sms/${instance}`,
-              cookies,
-              instance,
-              input,
-              phone,
-              case: c,
-              state,
-              result: 'reminder set',
-            }});
+            // Only create a document if a reminder document matching the case uid and phone number does not exist.
+            if (documentCount == 0) {
+              await ReminderDao.create({
+                uid: c.uid,
+                number: c.number,
+                phone,
+              });
+
+              logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
+                service: `/api/sms/${instance}`,
+                cookies,
+                instance,
+                input,
+                phone,
+                case: c,
+                state,
+                result: 'reminder set',
+              }});
+            }
             res.send(smsResponse.reminderYes(c).toString());
           }
           // send help due to unexpected response
@@ -178,23 +188,34 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
         else {
           // if a number was given lets check to see if it maps to a case index
           if (response === parseInt(response).toString() && index >= 0 && index < cases.length) {
-            let c = cases[index];
-            await ReminderDao.create({
+            const c = cases[index];
+
+            const documentCount = await ReminderDao.countDocuments({
               uid: c.uid,
               number: c.number,
               phone,
             });
 
-            logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
-              service: `/api/sms/${instance}`,
-              cookies,
-              instance,
-              input,
-              phone,
-              case: c,
-              state,
-              result: 'reminder set',
-            }});
+            // Only create a document if a reminder document matching the case uid and phone number does not exist.
+            if (documentCount == 0) {
+              await ReminderDao.create({
+                uid: c.uid,
+                number: c.number,
+                phone,
+              });
+
+              logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
+                service: `/api/sms/${instance}`,
+                cookies,
+                instance,
+                input,
+                phone,
+                case: c,
+                state,
+                result: 'reminder set',
+              }});
+          }
+            
             res.send(smsResponse.reminderYes(c).toString());
           }
           // send help due to unexpected response
@@ -253,4 +274,4 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
   }
 
   res.end();
-};
+}
