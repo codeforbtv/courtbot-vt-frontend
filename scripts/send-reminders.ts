@@ -9,7 +9,7 @@ import logger from '../utils/logger';
 
 const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWILIO_AUTH_TOKEN || '');
 
-(async () => {
+const sendReminders = async () => {
   try {
     // connect to database
     logger.debug('connecting to database');
@@ -21,7 +21,7 @@ const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWIL
     const items = fs.readdirSync(instanceDirectory);
 
     // go thru each item found in the directory
-    for(let instanceIndex = 0; instanceIndex < items.length; instanceIndex++) {
+    for (let instanceIndex = 0; instanceIndex < items.length; instanceIndex++) {
       const instance = items[instanceIndex];
       try {
         // if the item is a directory then lets assume it's a valid instance
@@ -32,10 +32,12 @@ const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWIL
           // get the day after tomorrows start date & time to use as time bound
           const startDate = moment().toDate();
           const endDate = moment.tz(instanceMethods.getTimezone()).startOf('day').add(2, 'days').toDate();
-          logger.info(`Searching for dates between ${startDate} - ${endDate}`, { metadata: {
-            service: `send-reminders.ts`,
-            instance,
-          }});
+          logger.info(`Searching for dates between ${startDate} - ${endDate}`, {
+            metadata: {
+              service: `send-reminders.ts`,
+              instance,
+            }
+          });
 
           // find all cases within the time bounds
           const cases = await instanceMethods.findAll({
@@ -48,10 +50,12 @@ const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWIL
 
           // lets get a list of uids to query off
           const uids = cases.map(o => o.uid);
-          logger.info(`Cases Found: ${uids}`, { metadata: {
-            service: `send-reminders.ts`,
-            instance,
-          }});
+          logger.info(`Cases Found: ${uids}`, {
+            metadata: {
+              service: `send-reminders.ts`,
+              instance,
+            }
+          });
 
           // find all reminders that match the dockets
           const reminders = await ReminderDao.find({
@@ -63,7 +67,7 @@ const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWIL
 
           // go thru each reminder to check to see if it matches a case
           // then send a text if it does
-          for(let i = 0; i < reminders.length; i++) {
+          for (let i = 0; i < reminders.length; i++) {
             const reminder = reminders[i];
             try {
               const c = _.find(cases, (o) => o.uid === reminder.uid);
@@ -74,12 +78,14 @@ const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWIL
                   from: process.env.TWILIO_PHONE_NUMBER,
                   body: `Just a reminder that you have an appointment coming up on ${moment(c.date).tz(instanceMethods.getTimezone()).format('l LT')} @ ${c.address}. Case is ${c.number}`,
                 };
-                logger.info(JSON.stringify(options), { metadata: {
-                  service: `send-reminders.ts`,
-                  instance,
-                  reminder: reminder.toJSON(),
-                  case: c,
-                }});
+                logger.info(JSON.stringify(options), {
+                  metadata: {
+                    service: `send-reminders.ts`,
+                    instance,
+                    reminder: reminder.toJSON(),
+                    case: c,
+                  }
+                });
                 await client.messages.create(options);
 
                 // set the reminder active to false
@@ -94,28 +100,41 @@ const client = new Twilio(process.env.TWILIO_ACCOUNT_SID || '', process.env.TWIL
                 });
               }
             }
-            catch(ex) {
-              logger.error(ex, { metadata: {
-                service: `send-reminders.ts`,
-                instance,
-                reminder: reminder.toJSON(),
-              }});
+            catch (ex) {
+              logger.error(ex, {
+                metadata: {
+                  service: `send-reminders.ts`,
+                  instance,
+                  reminder: reminder.toJSON(),
+                }
+              });
             }
           }
         }
       }
       catch (ex) {
-        logger.error(ex, { metadata: {
-          service: `send-reminders.ts`,
-          instance,
-        }});
+        logger.error(ex, {
+          metadata: {
+            service: `send-reminders.ts`,
+            instance,
+          }
+        });
       }
     }
   } catch (ex) {
-    logger.error(ex, { metadata: {
-      service: `send-reminders.ts`,
-    }});
+    logger.error(ex, {
+      metadata: {
+        service: `send-reminders.ts`,
+      }
+    });
+  }
 }
 
-  process.exit();
-})();
+if (process !== undefined && process.env !== undefined && process.env.NODE_ENV === 'test') {
+  module.exports = sendReminders;
+} else {
+  (async () => {
+    sendReminders
+    process.exit();
+  })();
+}
