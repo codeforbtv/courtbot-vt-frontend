@@ -16,6 +16,9 @@
 
 [![User finds a case but doesn't sign up for notification](https://tinyurl.com/2e5hkbzp)](https://tinyurl.com/2e5hkbzp)<!--![User finds a case but doesn't sign up for notification](./diagrams/case-found-no-reminder-set.puml)-->
 
+## User signs up to receive a reminder the user has already signed up to receive a notification on
+[![User has already signed up to receive a reminder](https://tinyurl.com/2375cj3f)]<!--[![User has already signed up to receive a reminder](./diagrams/case-found-sign-up-for-reminder-reminder-already-set.puml)]-->
+
 ## User finds multiple cases
 
 [![User finds multiple cases](https://tinyurl.com/2nab39j3)](https://tinyurl.com/2nab39j3)<!--![User finds multiple cases](./diagrams/multiple-cases.puml)-->

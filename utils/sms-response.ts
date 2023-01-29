@@ -53,11 +53,18 @@ const reminderNo = (website:string) => {
   return resp;
 };
 
+const reminderActive = (c:Case, timezone = 'America/New_York')) => {
+  var resp = new MessagingResponse();
+  resp.message(`A reminder to notify you on case "${c.number}" taking place on ${moment(c.date).tz(timezone).format('l LT')} @ ${c.address} has already been set.`);
+  return resp;
+}
+
 export default {
   caseNotFound,
   caseFound,
   error,
   help,
+  reminderActive,
   reminderNo,
   reminderYes,
 };

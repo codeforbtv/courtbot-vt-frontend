@@ -135,23 +135,50 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
           // let's check for a yes
           if (response.toLowerCase() === 'yes') {
             let c = cases[0];
-            await ReminderDao.create({
+
+            // check if a reminder is already active
+            const reminders = await ReminderDao.find({
+              active: true,
               uid: c.uid,
               number: c.number,
               phone,
-            });
+            }).exec();
 
-            logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
-              service: `/api/sms/${instance}`,
-              cookies,
-              instance,
-              input,
-              phone,
-              case: c,
-              state,
-              result: 'reminder set',
-            }});
-            res.send(smsResponse.reminderYes(c).toString());
+            if (reminders.length === 0) {
+              // create a new reminder document
+              // if no 'active' reminder documents are found
+              // matching the case uid, docket number, and phone number
+              await ReminderDao.create({
+                uid: c.uid,
+                number: c.number,
+                phone,
+              });
+              logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
+                service: `/api/sms/${instance}`,
+                cookies,
+                instance,
+                input,
+                phone,
+                case: c,
+                state,
+                result: 'reminder set',
+              }});
+              res.send(smsResponse.reminderYes(c).toString());
+            } else {
+              // at least one reminder document in the collection already exists
+              // for the phone number `phone` to be reminded about case docket `c.number`
+              logger.info(`${phone} (${instance})[${state}]: reminder already set`, { metadata: {
+                service: `/api/sms/${instance}`,
+                cookies,
+                instance,
+                input,
+                phone,
+                case: c,
+                state,
+                result: 'reminder already set',
+              }});
+              res.send(smsResponse.reminderActive(c).toString(), instanceMethods.getTimezone());
+            }
           }
           // send help due to unexpected response
           else {
@@ -179,23 +206,49 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
           // if a number was given lets check to see if it maps to a case index
           if (response === parseInt(response).toString() && index >= 0 && index < cases.length) {
             let c = cases[index];
-            await ReminderDao.create({
+            // check if a reminder is already active
+            const reminders = await ReminderDao.find({
+              active: true,
               uid: c.uid,
               number: c.number,
               phone,
-            });
+            }).exec();
 
-            logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
-              service: `/api/sms/${instance}`,
-              cookies,
-              instance,
-              input,
-              phone,
-              case: c,
-              state,
-              result: 'reminder set',
-            }});
-            res.send(smsResponse.reminderYes(c).toString());
+            if (reminders.length === 0) {
+              // create a new reminder document
+              // if no 'active' reminder documents are found
+              // matching the case uid, docket number, and phone number
+              await ReminderDao.create({
+                uid: c.uid,
+                number: c.number,
+                phone,
+              });
+              logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
+                service: `/api/sms/${instance}`,
+                cookies,
+                instance,
+                input,
+                phone,
+                case: c,
+                state,
+                result: 'reminder set',
+              }});
+              res.send(smsResponse.reminderYes(c).toString());
+            } else {
+              // at least one reminder document in the collection already exists
+              // for the phone number `phone` to be reminded about case docket `c.number`
+              logger.info(`${phone} (${instance})[${state}]: reminder already set`, { metadata: {
+                service: `/api/sms/${instance}`,
+                cookies,
+                instance,
+                input,
+                phone,
+                case: c,
+                state,
+                result: 'reminder already set',
+              }});
+              res.send(smsResponse.reminderActive(c).toString(), instanceMethods.getTimezone());
+            }
           }
           // send help due to unexpected response
           else {
