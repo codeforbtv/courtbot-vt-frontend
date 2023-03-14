@@ -91,7 +91,7 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
               state,
               result: 'case not found',
             }});
-            res.send(smsResponse.caseNotFound(caseNumber).toString());
+            res.send(smsResponse.caseNotFound(caseNumber, instanceMethods.getWebsite()).toString());
           }
         }
         // send help response

@@ -14,9 +14,9 @@ const help = (helpText:string) => {
   return resp;
 };
 
-const caseNotFound = (number:string) => {
+const caseNotFound = (number:string, website:string) => {
   var resp = new MessagingResponse();
-  resp.message(`We did not find any cases that match ${number}`);
+  resp.message(`We did not find any cases that match ${number}. Please double-check your docket number and try again. If we can't find a match, you can always go to ${website} for more information about your case.`);
   return resp;
 };
 
