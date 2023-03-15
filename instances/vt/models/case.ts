@@ -51,7 +51,7 @@ export default class VtInstanceMethods implements IInstanceMethods {
     return /.+-.+-.+/;
   }
 
-  async findAll(obj: { number?: string, startDate?: Date, endDate?: Date }) {
+  async findAll(obj: { number?: string, startDate?: Date, endDate?: Date, limit?: number }) {
     await initialize();
 
     let params:EventParams = {};
@@ -69,7 +69,7 @@ export default class VtInstanceMethods implements IInstanceMethods {
         params.date.$lt = obj.endDate;
       }
     }
-    const allCases = await EventDao.find(params).lean().exec();
+    const allCases = await EventDao.find(params).limit(obj.limit || 10).lean().exec();
 
     const uniqueCases:Event[] = [];
     const uniqueDocketNumbers:String[] = [];

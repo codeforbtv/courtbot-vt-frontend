@@ -1,5 +1,7 @@
 import moment from 'moment-timezone';
 import { Case } from '../types';
+import helpers from '../utils/helpers';
+
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 
 const error = () => {
@@ -24,16 +26,16 @@ const caseFound = (cases:Case[], timezone = 'America/New_York') => {
   var resp = new MessagingResponse();
   let message:String;
 
-
+  console.log(cases)
   if (cases.length === 1) {
     const c = cases[0];
     message = `We found case "${c.number}" on ${moment(c.date).tz(timezone).format('l LT')} @ ${c.address}.\nReply with YES if you would like a courtesy reminder the day before or reply with NO to start over.\n`;
 
   }
   else {
-    message = `We found ${cases.length} case${cases.length > 1 ? 's' : ''}.\nReply with a # if you would like a courtesy reminder the day before or reply with NO to start over.\n`;
+    message = `We found ${cases.length} cases.\nReply with a letter if you would like a courtesy reminder the day before or reply with NO to start over.\n`;
     cases.forEach((c,i) => {
-      message += `\n${i+1} - "${c.number}" on ${moment(c.date).tz(timezone).format('l LT')} @ ${c.address}\n`;
+      message += `\n${helpers.indexToLetter(i)} - "${c.number}" on ${moment(c.date).tz(timezone).format('l LT')} @ ${c.address}\n`;
     });  
   }
   resp.message(message);
