@@ -1,5 +1,12 @@
 # Developer Documentation
 
+## [SMS Test Page](http://localhost:3000/dev/sms)
+
+**This page is only available in a dev environment aka `NODE_ENV=development`**
+
+Useful test page for sending messages to our endpoint and interacting with it.
+
+
 ## Useful Tips
 
 ### Find input to get multiple cases

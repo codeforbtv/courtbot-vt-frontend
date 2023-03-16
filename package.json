@@ -7,9 +7,7 @@
     "build": "next build",
     "start": "next start -p $PORT",
     "heroku-postbuild": "npm run build",
-    "sendreminders": "ts-node -r dotenv/config --project scripts/tsconfig.json scripts/send-reminders.ts dotenv_config_path=.env.local",
-    "loadtestdata": "node -r esm -r dotenv/config instances/vt/scripts/load-test-data.js dotenv_config_path=.env.local",
-    "deletetestdata": "node -r esm -r dotenv/config instances/vt/scripts/delete-test-data.js dotenv_config_path=.env.local"
+    "sendreminders": "ts-node -r dotenv/config --project scripts/tsconfig.json scripts/send-reminders.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "@types/cookie": "^0.4.1",

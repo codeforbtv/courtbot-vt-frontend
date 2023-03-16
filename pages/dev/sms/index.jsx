@@ -1,34 +1,71 @@
 import Head from 'next/head'
 import { useEffect, useRef, useState } from 'react';
 
+export function getStaticProps() {
+  return {
+    // returns the default 404 page with a status code of 404 when not development
+    notFound: process.env.NODE_ENV !== 'development',
+    props: {},
+  };
+}
+
 export default function Sms() {
   const [ messages, setMessages ] = useState([]);
   const [ formData, setFormData ] = useState({
-    message: '',
+    Body: '',
   });
+  const formRef = useRef();
   const inputRef = useRef();
   const messageListRef = useRef();
 
-  const handleChange = (ev:Event) => {
+  const handleChange = (ev) => {
     setFormData({
       ...formData,
       [ev?.target?.name]: ev?.target?.value,
     });
   };
 
-  const onSend = (ev:Event) => {
+  const onSend = (ev) => {
     ev.preventDefault();
     if (formData.message !== '') {
-      setFormData({
-        message: '',
-      });
+      // construct client message
+      const clientMessage = {
+        from: 'client',
+        message: formData.Body,
+      };
 
+      const xhrFormData = new FormData(formRef.current);
+      // send message
+      fetch('/api/sms/vt', {
+        method: "POST",
+        body: new URLSearchParams(xhrFormData),
+      })
+        .then(response => response.text())
+        .then(xmlStr => {
+          // grab server message
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(xmlStr, "application/xml");
+
+          // append the messages
+          setMessages([...messages,
+            // HACK: need to re-add client message due to possible react timing issue and using old messages array
+            clientMessage,
+            {
+              from: 'server',
+              message: xmlDoc.querySelector('Message')?.textContent,
+            }
+          ]);
+
+        });
+
+      // clear the input
+      setFormData({
+        Body: '',
+      });
       inputRef?.current?.focus();
 
-      setMessages([...messages, {
-        from: 'client',
-        message: formData.message,
-      }]);
+      // append the message
+      setMessages([...messages, clientMessage]);
     }
   };
 
@@ -69,8 +106,9 @@ export default function Sms() {
         </div>
       </div>
 
-      <form onSubmit={onSend} className="flex-initial p-4 text-center">
-        <input type="text" ref={inputRef} name="message" onChange={handleChange} value={formData?.message} className="input input-bordered w-full max-w-xs" />
+      <form ref={formRef} onSubmit={onSend} className="flex-initial p-4 text-center">
+        <input type="hidden" name="From" value={`+1${process.env.NEXT_PUBLIC_PHONE_NUMBER?.replaceAll('-','')}`} />
+        <input type="text" ref={inputRef} name="Body" onChange={handleChange} value={formData?.Body} className="input input-bordered w-full max-w-xs" />
         <button type="submit" className="btn btn-primary ml-2">Send</button>
       </form>
     </div>

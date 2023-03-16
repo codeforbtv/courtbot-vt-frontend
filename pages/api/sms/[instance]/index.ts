@@ -243,9 +243,6 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
       case 'POST':
         await handleText(req, res, req.body.Body, req.body.From);
         break;
-      case 'GET':
-        await handleText(req, res, Array.isArray(req.query.text) ? req.query.text[0] : req.query.text, process.env.TWILIO_PHONE_NUMBER || '');
-        break;
       default:
         res
           .status(400)
