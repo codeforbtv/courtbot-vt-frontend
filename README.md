@@ -19,17 +19,23 @@ npm run dev
 can be stored in a file called `.env.local`
 
 ```
-TWILIO_ACCOUNT_SID=Your-Account-SID
-TWILIO_AUTH_TOKEN=Your-Twilio-Auth-Token
-TWILIO_PHONE_NUMBER=Your-Twilio-Number
-NEXT_PUBLIC_PHONE_NUMBER=Twilio-Number-Used-For-Display
-MONGODB_URI=Your-MongoDB-URI
-LOG_LEVEL=Log-Level
-BASIC_AUTH_USERNAME=username-for-basic-auth
-BASIC_AUTH_PASSWORD=password-for-basic-auth
-BASIC_AUTH_METRICS_USERNAME=username-for-metrics-page
-BASIC_AUTH_METRICS_PASSWORD=password-for-metrics-page
+TWILIO_ACCOUNT_SID                  = <Twilio Account SID>
+TWILIO_AUTH_TOKEN                   = <Twilio Auth Token>
+TWILIO_PHONE_NUMBER                 = <Twilio Number>
+NEXT_PUBLIC_PHONE_NUMBER            = <Twilio Number used for display>
+MONGODB_URI                         = <MongoDB URI>
+LOG_LEVEL                           = <Log Level>
+LOG_COLLECTION                      = <Mongo collection to use for log entries>
+NOTIFICATION_COLLECTION             = <Mongo collection to use for notification entries>
+REMINDER_COLLECTION                 = <Mongo collection to use for reminder entries>
+BASIC_AUTH_USERNAME                 = <username for basic auth>
+BASIC_AUTH_PASSWORD                 = <password for basic auth>
+BASIC_AUTH_METRICS_USERNAME         = <username for metrics page>
+BASIC_AUTH_METRICS_PASSWORD         = <password for metrics page>
 
+# Vermont data specific variables
+VT_MONGODB_URI                      = <MongoDB URI for VT data>
+VT_MONGODB_EVENTS_COLLECTION_NAME   = <Mongo collection name for VT events>
 ```
 
 ## util scripts
