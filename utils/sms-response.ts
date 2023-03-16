@@ -26,16 +26,15 @@ const caseFound = (cases:Case[], timezone = 'America/New_York') => {
   var resp = new MessagingResponse();
   let message:String;
 
-  console.log(cases)
   if (cases.length === 1) {
     const c = cases[0];
-    message = `We found case "${c.number}" on ${moment(c.date).tz(timezone).format('l LT')} @ ${c.address}.\nReply with YES if you would like a courtesy reminder the day before or reply with NO to start over.\n`;
+    message = `We found case ${caseDisplay(c, timezone)}.\nReply with YES if you would like a courtesy reminder the day before or reply with NO to start over.\n`;
 
   }
   else {
     message = `We found ${cases.length} cases.\nReply with a letter if you would like a courtesy reminder the day before or reply with NO to start over.\n`;
     cases.forEach((c,i) => {
-      message += `\n${helpers.indexToLetter(i)} - "${c.number}" on ${moment(c.date).tz(timezone).format('l LT')} @ ${c.address}\n`;
+      message += `\n${helpers.indexToLetter(i)} - ${caseDisplay(c, timezone)}\n`;
     });  
   }
   resp.message(message);
@@ -54,6 +53,10 @@ const reminderNo = (website:string) => {
   resp.message(`You said no so we won't text you a reminder. You can always go to ${website} for more information about your case.`);
   return resp;
 };
+
+function caseDisplay(c:Case, timezone:string) {
+  return `"${c.name} (${c.number})" on ${moment(c.date).tz(timezone).format('l LT')} @ ${c.courtName} in ${c.address}`;
+}
 
 export default {
   caseNotFound,

@@ -10,8 +10,10 @@ function toCase(o:Event, startDate?:Date, endDate?:Date):Case {
   let c:Case = {
     uid: o._id,
     number: o.docket_number,
+    name: o.case.name,
     date: o.date,
-    address: `${o.court_room_code} ${o.county.name}, VT`,
+    courtName: o.court_room_code,
+    address: `${o.county.name}, VT`,
   };
 
   // find a date that matches constraints
@@ -87,7 +89,9 @@ export default class VtInstanceMethods implements IInstanceMethods {
     return {
       uid: `testcase`,
       number: `testcase`,
+      name: `Test Case vs Vermont`,
       date: moment.tz(TIMEZONE).startOf('day').add(days, 'days').add(11, 'hours').toDate(),
+      courtName: `Test Court`,
       address: `65 State Street Montpelier, VT`,
     };
   }
