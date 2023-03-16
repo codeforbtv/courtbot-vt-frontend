@@ -38,16 +38,6 @@ VT_MONGODB_URI                      = <MongoDB URI for VT data>
 VT_MONGODB_EVENTS_COLLECTION_NAME   = <Mongo collection name for VT events>
 ```
 
-## util scripts
-
-```
-# load test data
-npm run loadtestdata
-
-# delete test data
-npm run deletetestdata
-```
-
 ## expose local server so twilio can send messages
 
 ```
@@ -99,4 +89,4 @@ go to (heroku dashboard)[https://dashboard.heroku.com/] and create a job with th
 `npx ts-node --project scripts/tsconfig.json -T scripts/send-reminders.ts`
 Set it to run at 10PM UTC which is 6PM EDT or 5PM EST.
 
-## [other docs](docs/README.md)
+## [Additional Documents](docs/README.md)
