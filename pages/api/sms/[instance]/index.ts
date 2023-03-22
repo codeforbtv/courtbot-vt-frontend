@@ -5,6 +5,8 @@ import logger from '../../../../utils/logger';
 import checkBasicAuth from '../../../../utils/basic-auth';
 import { getInstanceMethods } from '../../../../types/i-instance-methods';
 import { initialize, ReminderDao } from '../../../../dao/mongoose';
+import helpers from '../../../../utils/helpers';
+
 
 const maxAge = 60 * 15; // 10 minutes
 
@@ -91,7 +93,7 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
               state,
               result: 'case not found',
             }});
-            res.send(smsResponse.caseNotFound(caseNumber).toString());
+            res.send(smsResponse.caseNotFound(caseNumber, instanceMethods.getWebsite()).toString());
           }
         }
         // send help response
@@ -113,9 +115,6 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
         const cases = JSON.parse(req.cookies.cases);
         // get the text response
         const response = input.trim();
-        // parse the number out of the response
-        // we'll do a check later to see if it was a valid number
-        const index = parseInt(response) - 1;
 
         // no reminder, but let's send information their way
         if (response.toLowerCase() === 'no') {
@@ -176,8 +175,11 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
         }
         // logic for when more than 1 case was found
         else {
+          // parse the number out of the response
+          const index = helpers.letterToIndex(response);
+
           // if a number was given lets check to see if it maps to a case index
-          if (response === parseInt(response).toString() && index >= 0 && index < cases.length) {
+          if (index >= 0 && index < cases.length) {
             let c = cases[index];
             await ReminderDao.create({
               uid: c.uid,
@@ -216,7 +218,7 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
             }});
 
             // send help text
-            res.send(smsResponse.help(`Reply with a number between 1-${cases.length} or NO`).toString());
+            res.send(smsResponse.help(`Reply with a letter corresponding to a case or NO`).toString());
           }
         }
         break;
@@ -240,9 +242,6 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
     switch (method) {
       case 'POST':
         await handleText(req, res, req.body.Body, req.body.From);
-        break;
-      case 'GET':
-        await handleText(req, res, Array.isArray(req.query.text) ? req.query.text[0] : req.query.text, process.env.TWILIO_PHONE_NUMBER || '');
         break;
       default:
         res
