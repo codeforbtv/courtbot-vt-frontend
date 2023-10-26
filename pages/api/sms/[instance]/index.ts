@@ -134,10 +134,19 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
           // let's check for a yes
           if (response.toLowerCase() === 'yes') {
             let c = cases[0];
-            await ReminderDao.create({
+            await ReminderDao.updateOne({
               uid: c.uid,
               number: c.number,
               phone,
+            },
+            {
+              uid: c.uid,
+              number: c.number,
+              phone,
+              active: true
+            },
+            {
+              upsert: true
             });
 
             logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
@@ -181,10 +190,19 @@ const handleText = async (req:NextApiRequest, res:NextApiResponse, input:string,
           // if a number was given lets check to see if it maps to a case index
           if (index >= 0 && index < cases.length) {
             let c = cases[index];
-            await ReminderDao.create({
+            await ReminderDao.updateOne({
               uid: c.uid,
               number: c.number,
               phone,
+            },
+            {
+              uid: c.uid,
+              number: c.number,
+              phone,
+              active: true
+            },
+            {
+              upsert: true
             });
 
             logger.info(`${phone} (${instance})[${state}]: reminder set`, { metadata: {
